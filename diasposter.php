@@ -256,11 +256,11 @@ END_HTML;
      *
      * @see #savePost
      */
-    private function updatePostSimpleOption ($post_id, $opt, $value = 1) {
+    private function updatePostSimpleOption ($post_id, $opt) {
         if (isset($_POST[$this->prefix . "_$opt"])) {
             update_post_meta($post_id, $this->prefix . "_$opt", 1);
         } else {
-            delete_post_meta($post_id, $this->prefix . "_$opt");
+            update_post_meta($post_id, $this->prefix . "_$opt", 0);
         }
     }
 
@@ -279,8 +279,14 @@ END_HTML;
             return;
         }
 
-        $this->updatePostSimpleOption($post_id, 'use_excerpt');
-        $this->updatePostSimpleOption($post_id, 'use_geo');
+        if (!empty($_POST)) {
+            $this->updatePostSimpleOption($post_id, 'send_facebook');
+            $this->updatePostSimpleOption($post_id, 'send_tumblr');
+            $this->updatePostSimpleOption($post_id, 'send_twitter');
+            $this->updatePostSimpleOption($post_id, 'send_wordpress');
+            $this->updatePostSimpleOption($post_id, 'use_excerpt');
+            $this->updatePostSimpleOption($post_id, 'use_geo');
+        }
 
         if (isset($_POST['diaspora_aspect_ids'])) {
             update_post_meta($post_id, 'diaspora_aspect_ids', $this->validateAspectIds($_POST['diaspora_aspect_ids']));
@@ -377,6 +383,13 @@ END_HTML;
             $additional_data
         );
         if ($id) {
+            // Crosspost successful, delete temporary metadata
+            delete_post_meta($post_id, $this->prefix . '_send_facebook');
+            delete_post_meta($post_id, $this->prefix . '_send_tumblr');
+            delete_post_meta($post_id, $this->prefix . '_send_twitter');
+            delete_post_meta($post_id, $this->prefix . '_send_wordpress');
+            delete_post_meta($post_id, $this->prefix . '_use_excerpt');
+            delete_post_meta($post_id, $this->prefix . '_use_geo');
             $parts = explode('@', $this->diaspora->getDiasporaID());
             $host = array_pop($parts);
             update_post_meta($post_id, 'diaspora_host', $host);
@@ -467,7 +480,7 @@ END_HTML;
 
     private function getUseExcerpt ($post_id) {
         $x = get_post_meta($post_id, $this->prefix . '_use_excerpt', true);
-        if (empty($x)) {
+        if ('' === $x) {
             $options = get_option($this->prefix . '_settings');
             $x = (isset($options['use_excerpt'])) ? $options['use_excerpt'] : 0;
         }
@@ -476,7 +489,7 @@ END_HTML;
 
     private function getUseGeoData ($post_id) {
         $x = get_post_meta($post_id, $this->prefix . '_use_geo', true);
-        if (empty($x)) {
+        if ('' === $x) {
             $options = get_option($this->prefix . '_settings');
             $x = (isset($options['use_geo'])) ? $options['use_geo'] : 0;
         }
@@ -734,7 +747,11 @@ END_HTML;
         <summary><?php esc_html_e('Social media broadcasts', 'diasposter');?></summary>
 <?php
             if (!empty($services)) {
-                print '<ul>' . $this->diasporaServicesListItems($services) . '</ul>';
+                $services_selected = array();
+                foreach ($services as $srvc) {
+                    $services_selected[$srvc] = get_post_meta($post->ID, $this->prefix . '_send_' . $srvc, true);
+                }
+                print '<ul>' . $this->diasporaServicesListItems($services, $services_selected) . '</ul>';
             } else {
                 print '<p><span class="description">';
                 print sprintf(
@@ -1055,51 +1072,42 @@ END_HTML;
         return $html;
     }
 
-    private function diasporaServicesListItems ($services) {
+    private function diasporaServicesListItems ($services, $selected = array()) {
         $options = get_option($this->prefix . '_settings');
         $html = '';
+        $title_str = $label_str = array();
         foreach ($services as $x) {
             $html .= '<li><label>';
-            ob_start();
             switch ($x) {
                 case 'twitter':
-?>
-                <input type="checkbox" name="<?php esc_attr_e($this->prefix);?>_send_twitter" value="1"
-                    <?php if (!empty($options['auto_twitter'])) { ?>checked="checked"<?php } ?>
-                    title="<?php esc_html_e('Uncheck to disable the auto-tweet.', 'diasposter');?>"
-                    />
-                <?php esc_html_e('Send tweet?', 'diasposter');?>
-<?php
+                    $title_str[$x] = esc_html__('Uncheck to disable the auto-tweet.', 'diasposter');
+                    $label_str[$x] = esc_html__('Send tweet?', 'diasposter');
                     break;
                 case 'tumblr':
-?>
-                <input type="checkbox" name="<?php esc_attr_e($this->prefix);?>_send_tumblr" value="1"
-                    <?php if (!empty($options['auto_tumblr'])) { ?>checked="checked"<?php } ?>
-                    title="<?php esc_html_e('Uncheck to disable the Tumblr auto-post.', 'diasposter');?>"
-                    />
-                <?php esc_html_e('Send Tumblr post?', 'diasposter');?>
-<?php
+                    $title_str[$x] = esc_html__('Uncheck to disable the Tumblr auto-post.', 'diasposter');
+                    $label_str[$x] = esc_html__('Send Tumblr post?', 'diasposter');
                     break;
                 case 'wordpress':
-?>
-                <input type="checkbox" name="<?php esc_attr_e($this->prefix);?>_send_wordpress" value="1"
-                    <?php if (!empty($options['auto_wordpress'])) { ?>checked="checked"<?php } ?>
-                    title="<?php esc_html_e('Uncheck to disable the WordPress auto-post.', 'diasposter');?>"
-                    />
-                <?php esc_html_e('Send WordPress post?', 'diasposter');?>
-<?php
+                    $title_str[$x] = esc_html__('Uncheck to disable the WordPress auto-post.', 'diasposter');
+                    $label_str[$x] = esc_html__('Send WordPress post?', 'diasposter');
                     break;
                 case 'facebook':
-?>
-                <input type="checkbox" name="<?php esc_attr_e($this->prefix);?>_send_facebook" value="1"
-                    <?php if (!empty($options['auto_facebook'])) { ?>checked="checked"<?php } ?>
-                    title="<?php esc_html_e('Uncheck to disable the Facebook auto-post.', 'diasposter');?>"
-                    />
-                <?php esc_html_e('Send Facebook post?', 'diasposter');?>
-<?php
+                    $title_str[$x] = esc_html__('Uncheck to disable the Facebook auto-post.', 'diasposter');
+                    $label_str[$x] = esc_html__('Send Facebook post?', 'diasposter');
                     break;
             }
-            $html .= ob_get_clean();
+            $html .= '<input type="checkbox" name="' . esc_attr($this->prefix) . '_send_' . $x . '" value="1"';
+            if (isset($selected[$x]) && '' === $selected[$x]) {
+                // unknown, test against global option
+                if (isset($options['auto_' . $x])) {
+                    $html .= checked($options['auto_' . $x], true, false);
+                }
+            } else if (isset($selected[$x]) && 1 === (int) $selected[$x]) {
+                $html .= ' checked="checked"';
+            }
+            $html .= ' title="' . $title_str[$x] . '"';
+            $html .= '/>';
+            $html .= $label_str[$x];
             $html .= '</label></li>';
         }
         return $html;
