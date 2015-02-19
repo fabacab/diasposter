@@ -31,7 +31,7 @@ Learn more about how you can use this plugin to own your own data in conjunction
 == Installation ==
 
 1. Download the plugin file.
-1. Unzip the file into your 'wp-content/plugins/' directory.
+1. Unzip the file into your `wp-content/plugins/` directory.
 1. Go to your WordPress administration panel and activate the plugin.
 1. Go to Diasposter Settings (from the Settings menu) and either create or enter your Diaspora account settings. Then click "Save Changes."
 1. Start posting!!!
@@ -122,7 +122,7 @@ And if you choose to do this yourself, consider getting in touch with your theme
 
 = Version 0.1.1 =
 
-* Feature: Post location sharing can send WordPress [geodata](https://codex.wordpress.org/Geodata) metadata to Diaspora*. Toggle this on or off for each post by sing the new "Send post location?" option.
+* Feature: Post location sharing can send WordPress [geodata](https://codex.wordpress.org/Geodata) metadata to Diaspora*. Toggle this on or off for each post by using the new "Send post location?" option.
 * Feature: Service integrations for Twitter, Tumblr, WordPress, and Facebook let you control the auto-post for services you have connected to from your Diaspora* pod.
 
 = Verson 0.1 =
