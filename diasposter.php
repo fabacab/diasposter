@@ -660,7 +660,7 @@ END_HTML;
                 <?php if (1 === $g) { print 'checked="checked"'; } ?>
                 title="<?php esc_html_e('Uncheck to omit geodata from crosspost.', 'diasposter');?>"
                 />
-            <?php esc_html_e('Send post geodata?', 'diasposter');?>
+            <?php esc_html_e('Send post location?', 'diasposter');?>
         </label></p>
     </details>
 </fieldset>
