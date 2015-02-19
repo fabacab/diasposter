@@ -40,7 +40,7 @@ class Diasposter {
             if (!class_exists('Diaspora_Connection')) {
                 require_once 'lib/Diaspora_Connection.php';
             }
-            $this->diaspora = new Diaspora_Connection($options['user_accounts'][0], $options['passwords'][0]);
+            $this->diaspora = new Diaspora_Connection($options['user_accounts'][0], $this->decrypt($options['passwords'][0]));
             if (!empty($options['debug'])) {
                 $this->diaspora->setDebugLog(ABSPATH . '/wp-content/debug.log');
             }
@@ -473,7 +473,7 @@ END_HTML;
                 case 'passwords':
                     $safe_input[$k] = array();
                     foreach ($v as $x) {
-                        $safe_input[$k][] = sanitize_text_field($x);
+                        $safe_input[$k][] = $this->encrypt($x);
                     }
                     break;
                 case 'exclude_categories':
@@ -499,6 +499,15 @@ END_HTML;
             }
         }
         return $safe_input;
+    }
+
+    private function encrypt ($str, $key = AUTH_KEY) {
+        global $wpdb;
+        return base64_encode($wpdb->get_var($wpdb->prepare('SELECT AES_ENCRYPT(%s,%s)', $str, $key)));
+    }
+    private function decrypt ($str, $key = AUTH_KEY) {
+        global $wpdb;
+        return $wpdb->get_var($wpdb->prepare('SELECT AES_DECRYPT(%s,%s)', base64_decode($str), $key));
     }
 
     public function registerAdminMenu () {
@@ -690,7 +699,7 @@ END_HTML;
                 <div class="updated">
                     <p><?php // TODO: Move these to their own settings page tab? ?>
                         <input id="<?php esc_attr_e($this->prefix);?>_user_accounts[]" name="<?php esc_attr_e($this->prefix);?>_settings[user_accounts][]" type="hidden" value="<?php esc_attr_e($options['user_accounts'][0]);?>" placeholder="<?php esc_attr_e('Paste your Diaspora* ID here', 'diasposter');?>" />
-                        <input id="<?php esc_attr_e($this->prefix);?>_passwords[]" name="<?php esc_attr_e($this->prefix);?>_settings[passwords][]" type="hidden" value="<?php esc_attr_e($options['passwords'][0]);?>" placeholder="<?php esc_attr_e('Type your Diaspora* account password here', 'diasposter');?>" />
+                        <input id="<?php esc_attr_e($this->prefix);?>_passwords[]" name="<?php esc_attr_e($this->prefix);?>_settings[passwords][]" type="hidden" value="<?php esc_attr_e($this->decrypt($options['passwords'][0]));?>" placeholder="<?php esc_attr_e('Type your Diaspora* account password here', 'diasposter');?>" />
                         <?php esc_html_e('Connected to Diaspora*!', 'diasposter');?>
                         <a href="<?php print wp_nonce_url(admin_url('options-general.php?page=' . $this->prefix . '_settings&disconnect'), 'disconnect_from_diaspora', $this->prefix . '_nonce');?>" class="button"><?php esc_html_e('Disconnect', 'diasposter');?></a>
                         <span class="description"><?php esc_html_e('Disconnecting will stop cross-posts from appearing on or being imported from your Diaspora* stream(s), and will reset the options below to their defaults. You can re-connect at any time.', 'diasposter');?></span>
