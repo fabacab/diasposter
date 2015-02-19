@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.1
 Tested up to: 4.1.1
-Stable tag: 0.1
+Stable tag: 0.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,9 +16,9 @@ Diasposter posts to Diaspora whenever you hit the "Publish" button. Diasposter i
 
 * **Secure:** Unlike many other Diaspora tools, this plugin *never writes your login cookie to disk* and strictly enforces encrypted connections between your blog and your Diaspora pod, so your Diaspora access credentials are kept as safe as you keep your WordPress database. This is especially important on Shared Hosting plans where many other customers have access to your server's filesystem!
 * **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for post titles, excerpts, tags, custom post types, and more.
-* **Feature-rich:** Numerous additional options let you provide custom linkbacks, set global preferences, per-post settings, and more.
+* **Feature-rich:** Numerous additional options let you provide custom linkbacks, set global preferences and per-post settings, and more.
 
-Diasposter uses Diaspora's simple API to keep posts in sync as much as possible; when you delete your WordPress post, your Diaspora post is removed, too.
+Diasposter uses Diaspora's simple API to keep posts in sync as much as possible; when you delete your WordPress post, your Diaspora post is removed, too. Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
 
 *Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
 
@@ -82,6 +82,16 @@ Yes. By default, Diasposter only crossposts `post` post types, but you can enabl
 
 If you're a plugin developer, you can easily make your custom post types work well with Diasposter by implementing the `diasposter_save_post_types`, `diasposter_meta_box_post_types`, and `diasposter_prepared_post` filter hooks. See [Other Notes](https://wordpress.org/plugins/diasposter/other_notes/) for coding details.
 
+= Why don't I see the option to send a tweet automatically even after I set the auto-tweet/auto-post option? =
+
+Make sure you have correctly configured your desired service integration for your Diaspora* account on your Diaspora* pod. Usually, this is available by selecting the "Services" tab from your pod's account setting page (such as at `https://your-diaspora-pod.com/services`). Only the services that you have enabled will be available for you to use in the Diasposter post editing meta box.
+
+= Why aren't my Diaspora* posts showing my location even with "Send post location?" checked? =
+
+You need a plugin that collects post location data before you have any data to share. If you have not installed such a plugin, then there is simply no location data to send to Diaspora*. Neither Diasposter nor WordPress itself collects this information, but numerous other plugins can.
+
+If you have installed a geolocation plugin for WordPress but the location data is still not showing up, it is likely because the other plugin does not save location data in a standard format that other plugins (like Diasposter) can access. Diasposter adheres to the [WordPress Geodata standard](https://codex.wordpress.org/Geodata) for location information, and expects other plugins to behave accordingly. Try using a more well-behaved plugin instead.
+
 = Is Diasposter available in languages other than English? =
 
 Not yet, but I would love to accept translations for additional languages.
@@ -110,6 +120,11 @@ And if you choose to do this yourself, consider getting in touch with your theme
 
 == Changelog ==
 
+= Version 0.1.1 =
+
+* Feature: Post location sharing can send WordPress [geodata](https://codex.wordpress.org/Geodata) metadata to Diaspora*. Toggle this on or off for each post by sing the new "Send post location?" option.
+* Feature: Service integrations for Twitter, Tumblr, WordPress, and Facebook let you control the auto-post for services you have connected to from your Diaspora* pod.
+
 = Verson 0.1 =
 
 * Initial release.
@@ -127,3 +142,4 @@ Diasposter provides the following hooks for plugin and theme authors:
 * `diasposter_save_post_types` - Filter an array of custom post type names to process when Diasposter is invoked in the `save_post` WordPress action.
 * `diasposter_meta_box_post_types` - Filter an array of custom post type names for which to show the Diasposter post editing meta box.
 * `diasposter_prepared_post` - Filter the `$diaspora_body` string immediately before it gets crossposted to Diaspora.
+* `diasposter_services_array` - Filter the array of configured service integrations. Adding values like `facebook` to this array will cause Diasposter to include `facebook` in its JSON request to the Diaspora pod in the `services` field.

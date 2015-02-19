@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Diasposter package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Diasposter 0.1\n"
+"Project-Id-Version: Diasposter 0.1.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/diasposter\n"
-"POT-Creation-Date: 2015-02-19 01:46:44+00:00\n"
+"POT-Creation-Date: 2015-02-19 07:53:13+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -89,199 +89,211 @@ msgstr ""
 msgid "Donate to Diasposter"
 msgstr ""
 
-#: diasposter.php:172 diasposter.php:351 diasposter.php:565
+#: diasposter.php:172 diasposter.php:386 diasposter.php:637
 msgid "View post on Diaspora*"
 msgstr ""
 
-#: diasposter.php:351
+#: diasposter.php:386
 msgid "Post crossposted."
 msgstr ""
 
-#: diasposter.php:368
+#: diasposter.php:403
 msgid "Debug output:"
 msgstr ""
 
-#: diasposter.php:467
+#: diasposter.php:523
 msgid "User account cannot be empty."
 msgstr ""
 
-#: diasposter.php:506 diasposter.php:637
+#: diasposter.php:576 diasposter.php:724
 msgid "Diasposter Settings"
 msgstr ""
 
-#. #-#-#-#-#  diasposter.pot (Diasposter 0.1)  #-#-#-#-#
+#. #-#-#-#-#  diasposter.pot (Diasposter 0.1.1)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: diasposter.php:507 diasposter.php:527
+#: diasposter.php:577 diasposter.php:597
 msgid "Diasposter"
 msgstr ""
 
-#: diasposter.php:550
+#: diasposter.php:620
 msgid ""
 "Diasposter does not yet have a connection to Diaspora*. Are you sure you "
 "connected Diasposter to your Diaspora* account?"
 msgstr ""
 
-#: diasposter.php:572
+#: diasposter.php:647
 msgid "Send this post to Diaspora*?"
 msgstr ""
 
-#: diasposter.php:573
+#: diasposter.php:648
 msgid ""
 "If this post is in a category that Diasposter excludes, this will be ignored."
 msgstr ""
 
-#: diasposter.php:575
+#: diasposter.php:650
 msgid "Yes"
 msgstr ""
 
-#: diasposter.php:576
+#: diasposter.php:651
 msgid "No"
 msgstr ""
 
-#: diasposter.php:580 diasposter.php:641 diasposter.php:706
+#: diasposter.php:655 diasposter.php:728 diasposter.php:793
 msgid "Crossposting options"
 msgstr ""
 
-#: diasposter.php:582
+#: diasposter.php:657
 msgid "Destination & content"
 msgstr ""
 
-#: diasposter.php:584
+#: diasposter.php:659
 msgid "Send to my Diaspora* account called"
 msgstr ""
 
-#: diasposter.php:588
+#: diasposter.php:663
 msgid "Share with my aspect(s) named"
 msgstr ""
 
-#: diasposter.php:590
+#: diasposter.php:665
 msgid "Select one&hellip;"
 msgstr ""
 
-#: diasposter.php:591
+#: diasposter.php:666
 msgid "Public"
 msgstr ""
 
-#: diasposter.php:592
+#: diasposter.php:667
 msgid "All Aspects"
 msgstr ""
 
-#: diasposter.php:596
+#: diasposter.php:669
 msgid "&hellip;or select many"
 msgstr ""
 
-#: diasposter.php:604
+#: diasposter.php:677
 msgid "Uncheck to send post content as crosspost content."
 msgstr ""
 
-#: diasposter.php:606
+#: diasposter.php:679
 msgid "Send excerpt instead of main content?"
 msgstr ""
 
-#: diasposter.php:620
+#: diasposter.php:684
+msgid "Uncheck to omit geodata from crosspost."
+msgstr ""
+
+#: diasposter.php:686
+msgid "Send post location?"
+msgstr ""
+
+#: diasposter.php:691 diasposter.php:693
+msgid "Social media broadcasts"
+msgstr ""
+
+#: diasposter.php:707
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: diasposter.php:630
+#: diasposter.php:717
 msgid "Disconnected from Diaspora*."
 msgstr ""
 
-#: diasposter.php:631
+#: diasposter.php:718
 msgid ""
 "The connection to Diaspora* was disestablished. You can reconnect using the "
 "same credentials, or enter different credentials before reconnecting."
 msgstr ""
 
-#: diasposter.php:638
+#: diasposter.php:725
 msgid "Jump to options:"
 msgstr ""
 
-#: diasposter.php:640 diasposter.php:647
+#: diasposter.php:727 diasposter.php:734
 msgid "Connection to Diaspora*"
 msgstr ""
 
-#: diasposter.php:642
+#: diasposter.php:729
 msgid "Sync options"
 msgstr ""
 
-#: diasposter.php:643 diasposter.php:809
+#: diasposter.php:730 diasposter.php:952
 msgid "Plugin extras"
 msgstr ""
 
-#: diasposter.php:648
+#: diasposter.php:735
 msgid "Required settings to connect to Diaspora*."
 msgstr ""
 
-#: diasposter.php:654
+#: diasposter.php:741
 msgid "Reconnect to Diaspora*"
 msgstr ""
 
-#: diasposter.php:661
+#: diasposter.php:748
 msgid "Diaspora* ID"
 msgstr ""
 
-#: diasposter.php:664 diasposter.php:692
+#: diasposter.php:751 diasposter.php:779
 msgid "Paste your Diaspora* ID here"
 msgstr ""
 
-#: diasposter.php:666
+#: diasposter.php:753
 msgid ""
 "Your Diaspora* ID is sometimes called your D* address, and it looks like an "
 "email address."
 msgstr ""
 
-#: diasposter.php:668
+#: diasposter.php:755
 msgid "If you need a Diaspora* ID, you can %s."
 msgstr ""
 
-#: diasposter.php:670
+#: diasposter.php:757
 msgid ""
 "Get a Diaspora* ID by registering your desired address on an open D* pod."
 msgstr ""
 
-#: diasposter.php:671
+#: diasposter.php:758
 msgid "create one here"
 msgstr ""
 
-#: diasposter.php:678
+#: diasposter.php:765
 msgid "Diaspora* password"
 msgstr ""
 
-#: diasposter.php:681 diasposter.php:693
+#: diasposter.php:768 diasposter.php:780
 msgid "Type your Diaspora* account password here"
 msgstr ""
 
-#: diasposter.php:683
+#: diasposter.php:770
 msgid ""
 "Your Diaspora* password is needed to connect this blog to your Diaspora* "
 "account. To protect your personal account, you should create a separate "
 "account specifically for this blog."
 msgstr ""
 
-#: diasposter.php:694
+#: diasposter.php:781
 msgid "Connected to Diaspora*!"
 msgstr ""
 
-#: diasposter.php:695
+#: diasposter.php:782
 msgid "Disconnect"
 msgstr ""
 
-#: diasposter.php:696
+#: diasposter.php:783
 msgid ""
 "Disconnecting will stop cross-posts from appearing on or being imported from "
 "your Diaspora* stream(s), and will reset the options below to their "
 "defaults. You can re-connect at any time."
 msgstr ""
 
-#: diasposter.php:707
+#: diasposter.php:794
 msgid "Options for customizing crossposting behavior."
 msgstr ""
 
-#: diasposter.php:711
+#: diasposter.php:798
 msgid "Do not crosspost entries in these categories:"
 msgstr ""
 
-#: diasposter.php:728
+#: diasposter.php:815
 msgid ""
 "Will cause posts in the specificied categories never to be crossposted to "
 "Diaspora*. This is useful if, for instance, you are creating posts "
@@ -289,11 +301,11 @@ msgid ""
 "crossposting back and forth from one service to another."
 msgstr ""
 
-#: diasposter.php:733
+#: diasposter.php:820
 msgid "Send excerpts instead of main content?"
 msgstr ""
 
-#: diasposter.php:737
+#: diasposter.php:824
 msgid ""
 "When enabled, the excerpts (as opposed to the body) of your WordPress posts "
 "will be used as the main content of your Diaspora* posts. Useful if you "
@@ -301,11 +313,27 @@ msgid ""
 "Diaspora* by default. This can be overriden on a per-post basis, too."
 msgstr ""
 
-#: diasposter.php:742
+#: diasposter.php:829
+msgid "Send post geolocation data to Diaspora*?"
+msgstr ""
+
+#: diasposter.php:834
+msgid ""
+"When enabled, geolocation information associated with your post will be "
+"crossposted to Diaspora*. For this to work, you will need to install a well-"
+"behaved geocoding WordPress plugin if you have not done so already. This can "
+"be overriden on a per-post basis, too."
+msgstr ""
+
+#: diasposter.php:835
+msgid "Learn more about WordPress geolocation interoperability."
+msgstr ""
+
+#: diasposter.php:841
 msgid "Crosspost the following post types:"
 msgstr ""
 
-#: diasposter.php:760
+#: diasposter.php:859
 msgid ""
 "Choose which %1$spost types%2$s you want to crosspost. Not all post types "
 "can be crossposted safely, but many can. If you are not sure about a post "
@@ -314,19 +342,19 @@ msgid ""
 "are always enabled."
 msgstr ""
 
-#: diasposter.php:765
+#: diasposter.php:864
 msgid "Add the following markup to each crossposted entry:"
 msgstr ""
 
-#: diasposter.php:771
+#: diasposter.php:870
 msgid "Anything you type in this box will be added to every crosspost."
 msgstr ""
 
-#: diasposter.php:775
+#: diasposter.php:874
 msgid "was originally published on"
 msgstr ""
 
-#: diasposter.php:779
+#: diasposter.php:878
 msgid ""
 "Text or %1$sMarkdown%2$s you want to add to each post. Useful for things "
 "like a link back to your original post. You can use %3$s, %4$s, %5$s, and "
@@ -334,25 +362,25 @@ msgid ""
 "to the homepage for this site, and the name of this blog, respectively."
 msgstr ""
 
-#: diasposter.php:788 diasposter.php:803
+#: diasposter.php:887 diasposter.php:902
 msgid "Do not send post tags to Diaspora*"
 msgstr ""
 
-#: diasposter.php:792
+#: diasposter.php:891
 msgid ""
 "When enabled, tags on your WordPress posts are not applied to your Diaspora* "
 "posts. Useful if you maintain different taxonomies on your different sites."
 msgstr ""
 
-#: diasposter.php:798
+#: diasposter.php:897
 msgid "Automatically add these tags to all crossposts:"
 msgstr ""
 
-#: diasposter.php:802
+#: diasposter.php:901
 msgid "crosspost, magic"
 msgstr ""
 
-#: diasposter.php:803
+#: diasposter.php:902
 msgid ""
 "Comma-separated list of additional tags that will be added to every post "
 "sent to Diaspora*. Useful if only some posts on your Diaspora* stream are "
@@ -361,15 +389,50 @@ msgid ""
 "the value of the \"%s\" option.)"
 msgstr ""
 
-#: diasposter.php:810
+#: diasposter.php:908 diasposter.php:941
+msgid "Automatically tweet a link to your Diaspora post?"
+msgstr ""
+
+#: diasposter.php:913 diasposter.php:924 diasposter.php:935 diasposter.php:946
+msgid ""
+"When checked, new posts you create on WordPress will have their \"%s\" "
+"option enabled by default. You can always override this when editing an "
+"individual post."
+msgstr ""
+
+#: diasposter.php:913 diasposter.php:1008
+msgid "Send tweet?"
+msgstr ""
+
+#: diasposter.php:919
+msgid "Automatically make a Tumblr post about your Diaspora post?"
+msgstr ""
+
+#: diasposter.php:924 diasposter.php:1017
+msgid "Send Tumblr post?"
+msgstr ""
+
+#: diasposter.php:930
+msgid "Automatically make a WordPress.com post about your Diaspora post?"
+msgstr ""
+
+#: diasposter.php:935 diasposter.php:1026
+msgid "Send WordPress post?"
+msgstr ""
+
+#: diasposter.php:946 diasposter.php:1035
+msgid "Send Facebook post?"
+msgstr ""
+
+#: diasposter.php:953
 msgid "Additional options to customize plugin behavior."
 msgstr ""
 
-#: diasposter.php:815
+#: diasposter.php:958
 msgid "Enable detailed debugging information?"
 msgstr ""
 
-#: diasposter.php:822
+#: diasposter.php:965
 msgid ""
 "Turn this on only if you are experiencing problems using this plugin, or if "
 "you were told to do so by someone helping you fix a problem (or if you "
@@ -379,6 +442,22 @@ msgid ""
 "(%2$s) feature, additional information will be sent to a log file (%3$s). "
 "This file may contain sensitive information, so turn this off and erase the "
 "debug log file when you have resolved the issue."
+msgstr ""
+
+#: diasposter.php:1006
+msgid "Uncheck to disable the auto-tweet."
+msgstr ""
+
+#: diasposter.php:1015
+msgid "Uncheck to disable the Tumblr auto-post."
+msgstr ""
+
+#: diasposter.php:1024
+msgid "Uncheck to disable the WordPress auto-post."
+msgstr ""
+
+#: diasposter.php:1033
+msgid "Uncheck to disable the Facebook auto-post."
 msgstr ""
 
 #. Plugin URI of the plugin/theme
