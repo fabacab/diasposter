@@ -251,6 +251,19 @@ END_HTML;
         return $a;
     }
 
+    /**
+     * Helper function to cut down on code duplication.
+     *
+     * @see #savePost
+     */
+    private function updatePostSimpleOption ($post_id, $opt, $value = 1) {
+        if (isset($_POST[$this->prefix . "_$opt"])) {
+            update_post_meta($post_id, $this->prefix . "_$opt", 1);
+        } else {
+            delete_post_meta($post_id, $this->prefix . "_$opt");
+        }
+    }
+
     public function savePost ($post_id) {
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) { return; }
         if (!$this->isConnectedToService()) { return; }
@@ -266,16 +279,8 @@ END_HTML;
             return;
         }
 
-        if (isset($_POST[$this->prefix . '_use_excerpt'])) {
-            update_post_meta($post_id, $this->prefix . '_use_excerpt', 1);
-        } else {
-            delete_post_meta($post_id, $this->prefix . '_use_excerpt');
-        }
-        if (isset($_POST[$this->prefix . '_use_geo'])) {
-            update_post_meta($post_id, $this->prefix . '_use_geo', 1);
-        } else {
-            delete_post_meta($post_id, $this->prefix . '_use_geo');
-        }
+        $this->updatePostSimpleOption($post_id, 'use_excerpt');
+        $this->updatePostSimpleOption($post_id, 'use_geo');
 
         if (isset($_POST['diaspora_aspect_ids'])) {
             update_post_meta($post_id, 'diaspora_aspect_ids', $this->validateAspectIds($_POST['diaspora_aspect_ids']));
