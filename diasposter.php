@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -557,6 +557,12 @@ END_HTML;
                         $safe_input[$k] = $safe_tags;
                     }
                     break;
+                case 'cache_expire_in':
+                    $x = (int) sanitize_text_field($v);
+                    if (0 !== $x) { // don't save a 0 value
+                        $safe_input[$k] = $x;
+                    }
+                    break;
             }
         }
         return $safe_input;
@@ -615,6 +621,36 @@ END_HTML;
         return $options;
     }
 
+    private function getAspectsTransient ($diaspora_handle) {
+        $x = get_transient($this->prefix . '_aspects');
+        return isset($x[$diaspora_handle]) ? $x[$diaspora_handle] : false;
+    }
+    private function setAspectsTransient ($diaspora_handle, $aspects) {
+        $options = get_option($this->prefix . '_settings');
+        $ex = (!empty($options['cache_expire_in'])) ? $options['cache_expire_in'] : 10 * MINUTE_IN_SECONDS;
+        $x = get_transient($this->prefix . '_aspects');
+        if (false === $x) {
+            $x = array();
+        }
+        $x[$diaspora_handle] = $aspects;
+        return set_transient($this->prefix . '_aspects', $x, $ex);
+    }
+
+    private function getServicesTransient ($diaspora_handle) {
+        $x = get_transient($this->prefix . '_services');
+        return isset($x[$diaspora_handle]) ? $x[$diaspora_handle] : false;
+    }
+    private function setServicesTransient ($diaspora_handle, $services) {
+        $options = get_option($this->prefix . '_settings');
+        $ex = (!empty($options['cache_expire_in'])) ? $options['cache_expire_in'] : 10 * MINUTE_IN_SECONDS;
+        $x = get_transient($this->prefix . '_services');
+        if (false === $x) {
+            $x = array();
+        }
+        $x[$diaspora_handle] = $services;
+        return set_transient($this->prefix . '_services', $x, $ex);
+    }
+
     public function renderMetaBox ($post) {
         if (!$this->isConnectedToService()) {
             $this->showError(__('Diasposter does not yet have a connection to Diaspora*. Are you sure you connected Diasposter to your Diaspora* account?', 'diasposter'));
@@ -638,10 +674,15 @@ END_HTML;
 </p>
 <?php
         } else {
-            // TODO: Cache these responses using WP Transients
-            $this->diaspora->logIn();
-            $aspects  = $this->diaspora->getAspects();
-            $services = $this->diaspora->getServices();
+            $aspects  = $this->getAspectsTransient($this->diaspora->getDiasporaID());
+            $services = $this->getServicesTransient($this->diaspora->getDiasporaID());
+            if (false === $aspects || false === $services) {
+                $this->diaspora->logIn();
+                $aspects = $this->diaspora->getAspects();
+                $this->setAspectsTransient($this->diaspora->getDiasporaID(), $aspects);
+                $services = $this->diaspora->getServices();
+                $this->setServicesTransient($this->diaspora->getDiasporaID(), $services);
+            }
 ?>
 <fieldset>
     <legend style="display:block;"><?php esc_html_e('Send this post to Diaspora*?', 'diasposter');?></legend>
@@ -963,6 +1004,17 @@ END_HTML;
 <fieldset id="plugin-extras"><legend><?php esc_html_e('Plugin extras', 'diasposter');?></legend>
 <table class="form-table" summary="<?php esc_attr_e('Additional options to customize plugin behavior.', 'diasposter');?>">
     <tbody>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>_cache_expire_in"><?php esc_html_e('Expire cached Diaspora* pod settings in', 'diasposter');?></label>
+            </th>
+            <td>
+                <input id="<?php esc_attr_e($this->prefix);?>_cache_expire_in" name="<?php esc_attr_e($this->prefix);?>_settings[cache_expire_in]" value="<?php if (isset($options['cache_expire_in'])) { esc_attr_e($options['cache_expire_in']); }?>" type="number" min="1" placeholder="<?php esc_attr_e('number of seconds', 'diasposter');?>" />
+                <p class="description">
+                    <?php print sprintf(esc_html__('To improve performance, Diasposter keeps a cache of your Diaspora* settings. When you update your Diaspora* account settings on your pod, Diasposter will eventually notice the change. This option lets you tell Diasposter how long, in seconds, to wait before asking your pod if there has been a change. The default is %1$s600%2$s (ten minutes).', 'diasposter'), '<kbd>', '</kbd>');?>
+                </p>
+            </td>
+        </tr>
         <tr>
             <th>
                 <label for="<?php esc_attr_e($this->prefix);?>_debug">

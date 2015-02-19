@@ -23,3 +23,20 @@ delete_post_meta_by_key('diasposter_use_geo');
 // delete_post_meta_by_key('diaspora_post_id');
 // delete_post_meta_by_key('diaspora_host');
 // delete_post_meta_by_key('diaspora_aspect_ids');
+
+// Delete caches.
+global $wpdb;
+$wpdb->query($wpdb->prepare(
+    "
+    DELETE FROM {$wpdb->options}
+    WHERE option_name LIKE '%s'
+    ",
+    $wpdb->esc_like('_transient_diasposter') . '%'
+));
+$wpdb->query($wpdb->prepare(
+    "
+    DELETE FROM {$wpdb->options}
+    WHERE option_name LIKE '%s'
+    ",
+    $wpdb->esc_like('_transient_timeout_diasposter') . '%'
+));

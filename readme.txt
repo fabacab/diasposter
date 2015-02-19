@@ -2,9 +2,9 @@
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: Diaspora, post, crosspost, publishing, post formats
-Requires at least: 3.1
+Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -119,6 +119,11 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.2 =
+
+* Feature: Diaspora* pod settings are now cached for ten minutes by default. Optionally, you can configure how long to keep the cache for in the plugin options.
+* [Bugfix](https://joindiaspora.com/posts/5622273#b1f350f09a8f0132abc7543d7ed6cc36): Diasposter no longer shows warnings when no service integrations are configured for your account on your Diaspora* pod.
 
 = Version 0.1.1 =
 
