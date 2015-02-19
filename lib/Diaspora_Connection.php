@@ -148,13 +148,16 @@ class Diaspora_Connection {
         return (!empty($m[1])) ? json_decode($m[1]) : false;
     }
 
-    public function postStatusMessage ($msg, $aspect_ids = 'all_aspects') {
+    public function postStatusMessage ($msg, $aspect_ids = 'all_aspects', $additional_data = array()) {
         $data = array(
             'aspect_ids' => $aspect_ids,
             'status_message' => array(
                 'text' => $msg
             )
         );
+        if (!empty($additional_data)) {
+            $data += $additional_data;
+        }
 
         $headers = array(
             'Content-Type: application/json',

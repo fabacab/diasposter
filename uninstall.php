@@ -13,6 +13,7 @@ delete_option('diasposter_settings');
 delete_option('_diasposter_admin_notices');
 
 delete_post_meta_by_key('diasposter_crosspost');
+delete_post_meta_by_key('diasposter_use_geo');
 /**
  * TODO: Should we really delete this post meta?
  *       That'll wipe Tumblr post IDs and blog hostnames. :\

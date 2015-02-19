@@ -271,6 +271,11 @@ END_HTML;
         } else {
             delete_post_meta($post_id, $this->prefix . '_use_excerpt');
         }
+        if (isset($_POST[$this->prefix . '_use_geo'])) {
+            update_post_meta($post_id, $this->prefix . '_use_geo', 1);
+        } else {
+            delete_post_meta($post_id, $this->prefix . '_use_geo');
+        }
 
         if (isset($_POST['diaspora_aspect_ids'])) {
             update_post_meta($post_id, 'diaspora_aspect_ids', $this->validateAspectIds($_POST['diaspora_aspect_ids']));
@@ -338,10 +343,21 @@ END_HTML;
 
         $diaspora_body = apply_filters($this->prefix . '_prepared_post', $diaspora_body);
 
+        $additional_data = array();
+        if (get_post_meta($post_id, $this->prefix . '_use_geo', true)) {
+            if ($geo = $this->getPostGeo($post_id)) {
+                if ($geo['address']) {
+                    $additional_data['location_address'] = $geo['address'];
+                }
+                $additional_data['location_coords'] = "{$geo['latitude']},{$geo['longitude']}";
+            }
+        }
+
         // Crosspost to Diaspora
         $id = $this->diaspora->postStatusMessage(
             $diaspora_body,
-            get_post_meta($post_id, 'diaspora_aspect_ids', true)
+            get_post_meta($post_id, 'diaspora_aspect_ids', true),
+            $additional_data
         );
         if ($id) {
             $parts = explode('@', $this->diaspora->getDiasporaID());
@@ -433,12 +449,33 @@ END_HTML;
     }
 
     private function getUseExcerpt ($post_id) {
-        $e = get_post_meta($post_id, $this->prefix . '_use_excerpt', true);
-        if (empty($e)) {
+        $x = get_post_meta($post_id, $this->prefix . '_use_excerpt', true);
+        if (empty($x)) {
             $options = get_option($this->prefix . '_settings');
-            $e = (isset($options['use_excerpt'])) ? $options['use_excerpt'] : 0;
+            $x = (isset($options['use_excerpt'])) ? $options['use_excerpt'] : 0;
         }
-        return intval($e);
+        return intval($x);
+    }
+
+    private function getUseGeoData ($post_id) {
+        $x = get_post_meta($post_id, $this->prefix . '_use_geo', true);
+        if (empty($x)) {
+            $options = get_option($this->prefix . '_settings');
+            $x = (isset($options['use_geo'])) ? $options['use_geo'] : 0;
+        }
+        return intval($x);
+    }
+    private function getPostGeo ($post_id) {
+        $geo = false;
+        $x = get_post_meta($post_id, 'geo_public', true);
+        if ('' === $x || 1 == $x) {
+            $geo = array(
+                'latitude' => get_post_meta($post_id, 'geo_latitude', true),
+                'longitude' => get_post_meta($post_id, 'geo_longitude', true),
+                'address' => get_post_meta($post_id, 'geo_address', true),
+            );
+        }
+        return $geo;
     }
 
     private function getPostAspects ($post_id) {
@@ -484,6 +521,7 @@ END_HTML;
                     $safe_input[$k] = trim($v);
                     break;
                 case 'use_excerpt':
+                case 'use_geo':
                 case 'exclude_tags':
                 case 'debug':
                     $safe_input[$k] = intval($v);
@@ -568,6 +606,8 @@ END_HTML;
         $d = get_post_meta($post->ID, 'diaspora_host', true);
         $e = $this->getUseExcerpt($post->ID);
         $a = $this->getPostAspects($post->ID);
+        $g = $this->getUseGeoData($post->ID);
+        $geo = $this->getPostGeo($post->ID);
 
         $id = get_post_meta($post->ID, 'diaspora_post_id', true);
         if ('publish' === $post->post_status && $id) {
@@ -603,7 +643,6 @@ END_HTML;
                     <option value="public"<?php if (in_array('public', $a, true)) { print ' selected="selected"'; }?>><?php esc_html_e('Public', 'diasposter');?></option>
                     <option value="all_aspects"<?php if (in_array('all_aspects', $a, true)) { print ' selected="selected"'; }?>><?php esc_html_e('All Aspects', 'diasposter');?></option>
                 </optgroup>
-                <!-- TODO: Support multiple aspects -->
                 <optgroup label="<?php esc_attr_e('&hellip;or select many', 'diasposter');?>">
                     <?php print $this->diasporaAspectsOptionsHtml($aspects);?>
                 </optgroup>
@@ -615,6 +654,13 @@ END_HTML;
                 title="<?php esc_html_e('Uncheck to send post content as crosspost content.', 'diasposter');?>"
                 />
             <?php esc_html_e('Send excerpt instead of main content?', 'diasposter');?>
+        </label></p>
+        <p><label>
+            <input type="checkbox" name="<?php esc_attr_e($this->prefix);?>_use_geo" value="1"
+                <?php if (1 === $g) { print 'checked="checked"'; } ?>
+                title="<?php esc_html_e('Uncheck to omit geodata from crosspost.', 'diasposter');?>"
+                />
+            <?php esc_html_e('Send post geodata?', 'diasposter');?>
         </label></p>
     </details>
 </fieldset>
@@ -746,6 +792,18 @@ END_HTML;
             <td>
                 <input type="checkbox" <?php if (isset($options['use_excerpt'])) : print 'checked="checked"'; endif; ?> value="1" id="<?php esc_attr_e($this->prefix);?>_use_excerpt" name="<?php esc_attr_e($this->prefix);?>_settings[use_excerpt]" />
                 <label for="<?php esc_attr_e($this->prefix);?>_use_excerpt"><span class="description"><?php esc_html_e('When enabled, the excerpts (as opposed to the body) of your WordPress posts will be used as the main content of your Diaspora* posts. Useful if you prefer to crosspost summaries instead of the full text of your entires to Diaspora* by default. This can be overriden on a per-post basis, too.', 'diasposter');?></span></label>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>_use_geo"><?php esc_html_e('Send post geolocation data to Diaspora*?', 'diasposter');?></label>
+            </th>
+            <td>
+                <input type="checkbox" <?php if (isset($options['use_geo'])) : print 'checked="checked"'; endif; ?> value="1" id="<?php esc_attr_e($this->prefix);?>_use_geo" name="<?php esc_attr_e($this->prefix);?>_settings[use_geo]" />
+                <label for="<?php esc_attr_e($this->prefix);?>_use_geo"><span class="description">
+                    <?php esc_html_e('When enabled, geolocation information associated with your post will be crossposted to Diaspora*. For this to work, you will need to install a well-behaved geocoding WordPress plugin if you have not done so already. This can be overriden on a per-post basis, too.', 'diasposter');?>
+                    <a href="https://codex.wordpress.org/Geodata"><?php esc_html_e('Learn more about WordPress geolocation interoperability.', 'diasposter');?></a>
+                </span></label>
             </td>
         </tr>
         <tr>

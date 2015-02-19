@@ -104,7 +104,7 @@ And if you choose to do this yourself, consider getting in touch with your theme
 
 2. Once you create and enter your Diaspora account information and click "Save Changes," you'll find you're able to access the remainder of the options page. Set your cross-posting preferences and click "Save Changes." You're now ready to start crossposting!
 
-3. You can optionally choose not to crosspost individual WordPress posts from the Diasposter custom post editing box. This box also enables you to send the post's excerpt rather than its main body to Diaspora.
+3. You can optionally choose not to crosspost individual WordPress posts from the Diasposter custom post editing box. This box also enables you to send the post's excerpt rather than its main body to Diaspora, choose which aspects you'd like to share with, and toggle geolocation on or off. (Note that geolocation requires some [geodata](https://codex.wordpress.org/Geodata) to be associated with your post.)
 
 4. Get help where you need it from WordPress's built-in "Help" system.
 
