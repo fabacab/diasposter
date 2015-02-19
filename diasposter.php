@@ -325,12 +325,14 @@ END_HTML;
                 $diaspora_body .= "\n\n$tags_line";
             }
         }
-        if (!empty($options['additional_tags'])) {
-            $diaspora_body .= (empty($tags_line)) ? "\n\n" : ' ';
+        if (isset($options['additional_tags'])) {
             $arr = array_map('trim', $options['additional_tags']);
+            $diaspora_body .= (empty($tags_line)) ? "\n\n" : ' ';
             foreach ($arr as $tag) {
-                $t = strtr($tag, ' #', '- ');
-                $diaspora_body .= "#$t ";
+                if (!empty($tag)) {
+                    $t = strtr($tag, ' #', '- ');
+                    $diaspora_body .= "#$t ";
+                }
             }
         }
 
