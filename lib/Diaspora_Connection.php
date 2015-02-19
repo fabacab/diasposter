@@ -40,6 +40,10 @@ class Diaspora_Connection {
         return $this->user . '@' . $this->host;
     }
 
+    public function getPodURL () {
+        return $this->getScheme() . '://' . $this->host;
+    }
+
     public function setPassword ($passwd) {
         $this->password = $passwd;
     }

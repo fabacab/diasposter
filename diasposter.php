@@ -667,7 +667,7 @@ END_HTML;
                     <option value="all_aspects"<?php if (in_array('all_aspects', $a, true)) { print ' selected="selected"'; }?>><?php esc_html_e('All Aspects', 'diasposter');?></option>
                 </optgroup>
                 <optgroup label="<?php esc_attr_e('&hellip;or select many', 'diasposter');?>">
-                    <?php print $this->diasporaAspectsOptionsHtml($aspects);?>
+                    <?php if (!empty($aspects)) { print $this->diasporaAspectsOptionsHtml($aspects); } ?>
                 </optgroup>
             </select>
         </label></p>
@@ -691,7 +691,18 @@ END_HTML;
     <legend><?php esc_html_e('Social media broadcasts', 'diasposter');?></legend>
     <details open="open"><!-- Leave open until browsers work out their keyboard accessibility issues with this. -->
         <summary><?php esc_html_e('Social media broadcasts', 'diasposter');?></summary>
-        <ul><?php print $this->diasporaServicesListItems($services);?></ul>
+<?php
+            if (!empty($services)) {
+                print '<ul>' . $this->diasporaServicesListItems($services) . '</ul>';
+            } else {
+                print '<p><span class="description">';
+                print sprintf(
+                    esc_html__('No configured services found. To broadcast your post to social media from your Diaspora* pod, you must first %1$sconfigure your connected services%2$s.', 'diasposter'),
+                    '<a href="' . $this->diaspora->getPodURL() . '/services">', '</a>'
+                );
+                print '</span></p>';
+            }
+?>
     </details>
 </fieldset>
 <?php
