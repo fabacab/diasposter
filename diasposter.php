@@ -576,8 +576,9 @@ END_HTML;
     <a href="http://<?php print esc_attr($d);?>/posts/<?php print esc_attr($id);?>" class="button button-small"><?php esc_html_e('View post on Diaspora*', 'diasposter');?></a>
 </p>
 <?php
-        }
-        if (empty($id)) {
+        } else {
+            $this->diaspora->logIn();
+            $aspects = $this->diaspora->getAspects();
 ?>
 <fieldset>
     <legend style="display:block;"><?php esc_html_e('Send this post to Diaspora*?', 'diasposter');?></legend>
@@ -597,16 +598,15 @@ END_HTML;
         </label></p>
         <p><label>
             <?php esc_html_e('Share with my aspect(s) named', 'diasposter');?>
-            <select name="diaspora_aspect_ids[]">
+            <select name="diaspora_aspect_ids[]" multiple="multiple" size="<?php esc_attr_e(count($aspects) + 4);?>">
                 <optgroup label="<?php esc_attr_e('Select one&hellip;', 'diasposter');?>">
                     <option value="public"<?php if (in_array('public', $a, true)) { print ' selected="selected"'; }?>><?php esc_html_e('Public', 'diasposter');?></option>
                     <option value="all_aspects"<?php if (in_array('all_aspects', $a, true)) { print ' selected="selected"'; }?>><?php esc_html_e('All Aspects', 'diasposter');?></option>
                 </optgroup>
                 <!-- TODO: Support multiple aspects -->
-                <!--
                 <optgroup label="<?php esc_attr_e('&hellip;or select many', 'diasposter');?>">
+                    <?php print $this->diasporaAspectsOptionsHtml($aspects);?>
                 </optgroup>
-                -->
             </select>
         </label></p>
         <p><label>
@@ -847,6 +847,18 @@ END_HTML;
 <?php
         $this->showDonationAppeal();
     } // end public function renderOptionsPage
+
+    private function diasporaAspectsOptionsHtml ($aspects) {
+        $html = '';
+        foreach ($aspects as $a) {
+            $html .= '<option value="' . esc_attr($a->id) . '"';
+            if ($a->selected) {
+                $html .= ' selected="selected"';
+            }
+            $html .= '>' . esc_html($a->name) . '</option>';
+        }
+        return $html;
+    }
 
     private function diasporaAccountsSelectField ($attributes = array(), $selected = false) {
         $html = '<select';

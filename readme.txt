@@ -70,7 +70,11 @@ Not yet, but this is a planned feature. Feel free to offer suggestions or patche
 
 = Can I choose which Diaspora aspects to share with? =
 
-Currently, you can select either "Public" or "All Aspects" but not another aspect or multiple aspects. This is a planned feature. Feel free to "vote" for it by requesting it in the support forums or project issue tracker. The more noise you make about wanting this feature, the more justification I have to prioritize its development. ;)
+Yes. For each post you make, you can select either "Public" or "All Aspects" or any combination of your other aspects. The sharing rules obey the same rules as the Diaspora* bookmarklet. This means:
+
+* If "All Aspects" is selected, all other selected aspects are ignored.
+* If "Public" is selected, but "All Aspects" is not selected, then your post will be shared *publicly.*
+* If neither of the previous two options are selected, you may mix-and-match any number of your personal aspects.
 
 = Can I cross-post custom post types? =
 

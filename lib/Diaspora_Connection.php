@@ -141,6 +141,13 @@ class Diaspora_Connection {
         return (200 === $this->last_http_result->info['http_code']) ? true : false;
     }
 
+    public function getAspects () {
+        $this->doHttpRequest('/bookmarklet');
+        $m = array();
+        preg_match('/"aspects"\:(\[.+?\])/', $this->last_http_result->response, $m);
+        return (!empty($m[1])) ? json_decode($m[1]) : false;
+    }
+
     public function postStatusMessage ($msg, $aspect_ids = 'all_aspects') {
         $data = array(
             'aspect_ids' => $aspect_ids,
