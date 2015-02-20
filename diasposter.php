@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -264,6 +264,100 @@ END_HTML;
         }
     }
 
+    /**
+     * Translates WordPress post content to an appropriate Diaspora*
+     * post representation in Markdown.
+     */
+    private function prepareBody ($post_id) {
+        $post_title = apply_filters('the_title', get_post_field('post_title', $post_id));
+        $post_body = apply_filters('the_content', get_post_field('post_content', $post_id));
+        $post_excerpt = get_post_field('post_excerpt', $post_id);
+        // Mimic wp_trim_excerpt() without The Loop.
+        if (empty($post_excerpt)) {
+            $text = $post_body;
+            $text = strip_shortcodes($text); 
+            $text = apply_filters('the_content', $text);
+            $text = str_replace(']]>', ']]&gt;', $text);
+            $text = wp_trim_words($text);
+            $post_excerpt = $text;
+        }
+
+        if (!class_exists('HTML_To_Markdown')) {
+            require_once 'lib/HTML_To_Markdown.php';
+        }
+        $e = $this->getUseExcerpt($post_id); // Use excerpt?
+        $markdown = ($e)
+            ? new HTML_To_Markdown($post_excerpt)
+            : new HTML_To_Markdown($post_body);
+        $diaspora_body = $markdown->output();
+
+        // add title to start of post
+        if (!empty($post_title)) {
+            $diaspora_body = "# $post_title\n\n" . $diaspora_body;
+        }
+
+        // add custom footer
+        if (!empty($options['additional_markup'])) {
+            $diaspora_body .= "\n\n" . $this->replacePlaceholders($options['additional_markup'], $post_id);
+        }
+
+        // add tags to end of post
+        if (empty($options['exclude_tags'])) {
+            $tags = array();
+            if ($t = get_the_tags($post_id)) {
+                foreach ($t as $tag) {
+                    $tags[] = $tag->slug;
+                }
+                $tags_line = '#' . trim(implode(' #', $tags));
+                $diaspora_body .= "\n\n$tags_line";
+            }
+        }
+        if (isset($options['additional_tags'])) {
+            $arr = array_map('trim', $options['additional_tags']);
+            $diaspora_body .= (empty($tags_line)) ? "\n\n" : ' ';
+            foreach ($arr as $tag) {
+                if (!empty($tag)) {
+                    $t = strtr($tag, ' #', '- ');
+                    $diaspora_body .= "#$t ";
+                }
+            }
+        }
+
+        return $diaspora_body = apply_filters($this->prefix . '_prepared_post', $diaspora_body);
+    }
+
+    private function prepareAdditionalData ($post_id) {
+        $additional_data = array();
+        if (get_post_meta($post_id, $this->prefix . '_use_geo', true)) {
+            if ($geo = $this->getPostGeo($post_id)) {
+                if ($geo['address']) {
+                    $additional_data['location_address'] = $geo['address'];
+                }
+                $additional_data['location_coords'] = "{$geo['latitude']},{$geo['longitude']}";
+            }
+        }
+        $services = array();
+        $srvc_opts = array('send_twitter', 'send_tumblr', 'send_wordpress', 'send_facebook');
+        foreach ($srvc_opts as $opt) {
+            if (isset($_POST[$this->prefix . "_$opt"])) {
+                $x = explode('_', $opt);
+                $services[] = array_pop($x);
+            }
+        }
+        $services = apply_filters($this->prefix . '_services_array', $services);
+        if (!empty($services)) {
+            $additional_data['services'] = $services;
+        }
+
+        if ($thumb_id = get_post_thumbnail_id($post_id)) {
+            $resp = $this->diaspora->postPhoto(get_attached_file($thumb_id));
+            if ($resp->success) {
+                $additional_data['photos'] = "{$resp->data->photo->id}";
+            }
+        }
+        return $additional_data;
+    }
+
     public function savePost ($post_id) {
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) { return; }
         if (!$this->isConnectedToService()) { return; }
@@ -303,78 +397,8 @@ END_HTML;
         if (!$this->isPostCrosspostable($post_id)) { return false; }
         $this->diaspora->logIn();
 
-        $post_title = apply_filters('the_title', get_post_field('post_title', $post_id));
-        $post_body = apply_filters('the_content', get_post_field('post_content', $post_id));
-        $post_excerpt = get_post_field('post_excerpt', $post_id);
-        // Mimic wp_trim_excerpt() without The Loop.
-        if (empty($post_excerpt)) {
-            $text = $post_body;
-            $text = strip_shortcodes($text); 
-            $text = apply_filters('the_content', $text);
-            $text = str_replace(']]>', ']]&gt;', $text);
-            $text = wp_trim_words($text);
-            $post_excerpt = $text;
-        }
-
-        if (!class_exists('HTML_To_Markdown')) {
-            require_once 'lib/HTML_To_Markdown.php';
-        }
-        $e = $this->getUseExcerpt($post_id); // Use excerpt?
-        $markdown = ($e)
-            ? new HTML_To_Markdown($post_excerpt)
-            : new HTML_To_Markdown($post_body);
-        $diaspora_body = $markdown->output();
-        if (!empty($post_title)) {
-            $diaspora_body = "# $post_title\n\n" . $diaspora_body;
-        }
-        if (!empty($options['additional_markup'])) {
-            $diaspora_body .= "\n\n" . $this->replacePlaceholders($options['additional_markup'], $post_id);
-        }
-
-        if (empty($options['exclude_tags'])) {
-            $tags = array();
-            if ($t = get_the_tags($post_id)) {
-                foreach ($t as $tag) {
-                    $tags[] = $tag->slug;
-                }
-                $tags_line = '#' . trim(implode(' #', $tags));
-                $diaspora_body .= "\n\n$tags_line";
-            }
-        }
-        if (isset($options['additional_tags'])) {
-            $arr = array_map('trim', $options['additional_tags']);
-            $diaspora_body .= (empty($tags_line)) ? "\n\n" : ' ';
-            foreach ($arr as $tag) {
-                if (!empty($tag)) {
-                    $t = strtr($tag, ' #', '- ');
-                    $diaspora_body .= "#$t ";
-                }
-            }
-        }
-
-        $diaspora_body = apply_filters($this->prefix . '_prepared_post', $diaspora_body);
-
-        $additional_data = array();
-        if (get_post_meta($post_id, $this->prefix . '_use_geo', true)) {
-            if ($geo = $this->getPostGeo($post_id)) {
-                if ($geo['address']) {
-                    $additional_data['location_address'] = $geo['address'];
-                }
-                $additional_data['location_coords'] = "{$geo['latitude']},{$geo['longitude']}";
-            }
-        }
-        $services = array();
-        $srvc_opts = array('send_twitter', 'send_tumblr', 'send_wordpress', 'send_facebook');
-        foreach ($srvc_opts as $opt) {
-            if (isset($_POST[$this->prefix . "_$opt"])) {
-                $x = explode('_', $opt);
-                $services[] = array_pop($x);
-            }
-        }
-        $services = apply_filters($this->prefix . '_services_array', $services);
-        if (!empty($services)) {
-            $additional_data['services'] = $services;
-        }
+        $additional_data = $this->prepareAdditionalData($post_id);
+        $diaspora_body = $this->prepareBody($post_id);
 
         // Crosspost to Diaspora
         $id = $this->diaspora->postStatusMessage(

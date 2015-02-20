@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,7 +15,7 @@ Diasposter cross-posts your WordPress entries to Diaspora. Changes to your WordP
 Diasposter posts to Diaspora whenever you hit the "Publish" button. Diasposter is very lightweight. It just requires you to connect to your Diaspora account from the plugin options screen. After that, you're ready to cross-post!
 
 * **Secure:** Unlike many other Diaspora tools, this plugin *never writes your login cookie to disk* and strictly enforces encrypted connections between your blog and your Diaspora pod, so your Diaspora access credentials are kept as safe as you keep your WordPress database. This is especially important on Shared Hosting plans where many other customers have access to your server's filesystem!
-* **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for post titles, excerpts, tags, custom post types, and more.
+* **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for featured images, post titles, excerpts, tags, custom post types, and more.
 * **Feature-rich:** Numerous additional options let you provide custom linkbacks, set global preferences and per-post settings, and more.
 
 Diasposter uses Diaspora's simple API to keep posts in sync as much as possible; when you delete your WordPress post, your Diaspora post is removed, too. Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
@@ -119,6 +119,11 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.3 =
+
+* Feature: WordPress [Featured Images (aka "post thumbnails")](https://codex.wordpress.org/Post_Thumbnails) now become Diaspora* photos. Simply set a Featured Image in your WordPress post to upload it as an image and associate it with your Diaspora* post.
+* Usability: Per-post settings now remember their value in between editing different post drafts.
 
 = Version 0.1.2 =
 

@@ -186,6 +186,25 @@ class Diaspora_Connection {
         }
     }
 
+    public function postPhoto ($file) {
+        $params = array(
+            'photo[pending]' => 'true',
+            'qqfile' => basename($file)
+        );
+        $query_string = '?' . http_build_query($params);
+        $headers = array(
+            'Accept: application/json',
+            'X-Requested-With: XMLHttpRequest',
+            'X-CSRF-Token: ' . $this->csrf_token,
+            'X-File-Name: ' . basename($file),
+            'Content-Type: application/octet-stream',
+            'Content-Length: ' . filesize($file)
+        );
+        $data = file_get_contents($file);
+        $this->doHttpRequest('/photos' . $query_string, $data, $headers);
+        return $this->readJsonResponse($this->last_http_result->response);
+    }
+
     public function deletePost ($id) {
         $headers = array('X-CSRF-Token: ' . $this->csrf_token);
         $this->doHttpDelete("/posts/$id", array(), $headers);
