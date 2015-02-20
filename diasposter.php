@@ -297,6 +297,7 @@ END_HTML;
         }
 
         // add custom footer
+        $options = get_option($this->prefix . '_settings');
         if (!empty($options['additional_markup'])) {
             $diaspora_body .= "\n\n" . $this->replacePlaceholders($options['additional_markup'], $post_id);
         }
