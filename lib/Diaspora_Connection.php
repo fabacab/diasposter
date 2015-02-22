@@ -163,7 +163,7 @@ class Diaspora_Connection {
 
     public function getNotifications ($notification_type = '', $show = '') {
         $url = '/notifications?format=json';
-        if (!empty($notification_type)) { "&type=$type"; }
+        if (!empty($notification_type)) { $url .= "&type=$notification_type"; }
         if ('unread' === $show) { $url .= '&show=unread'; }
         $this->doHttpRequest($url);
         return $this->readJsonResponse($this->last_http_result->response);
