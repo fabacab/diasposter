@@ -659,34 +659,49 @@ END_HTML;
         return $options;
     }
 
-    private function getAspectsTransient ($diaspora_handle) {
-        $x = get_transient($this->prefix . '_aspects');
+    private function getTransientDiasporaData ($diaspora_handle, $transient) {
+        $x = get_transient("{$this->prefix}_$transient");
         return isset($x[$diaspora_handle]) ? $x[$diaspora_handle] : false;
     }
-    private function setAspectsTransient ($diaspora_handle, $aspects) {
+    private function setTransientDiasporaData ($diaspora_handle, $transient, $data) {
         $options = get_option($this->prefix . '_settings');
         $ex = (!empty($options['cache_expire_in'])) ? $options['cache_expire_in'] : 10 * MINUTE_IN_SECONDS;
-        $x = get_transient($this->prefix . '_aspects');
+        $x = get_transient("{$this->prefix}_$transient");
         if (false === $x) {
             $x = array();
         }
-        $x[$diaspora_handle] = $aspects;
-        return set_transient($this->prefix . '_aspects', $x, $ex);
+        $x[$diaspora_handle] = $data;
+        return set_transient("{$this->prefix}_$transient", $x, $ex);
     }
 
-    private function getServicesTransient ($diaspora_handle) {
-        $x = get_transient($this->prefix . '_services');
-        return isset($x[$diaspora_handle]) ? $x[$diaspora_handle] : false;
+    public function getAspectsTransient ($diaspora_handle) {
+        return $this->getTransientDiasporaData($diaspora_handle, 'aspects');
     }
-    private function setServicesTransient ($diaspora_handle, $services) {
-        $options = get_option($this->prefix . '_settings');
-        $ex = (!empty($options['cache_expire_in'])) ? $options['cache_expire_in'] : 10 * MINUTE_IN_SECONDS;
-        $x = get_transient($this->prefix . '_services');
-        if (false === $x) {
-            $x = array();
-        }
-        $x[$diaspora_handle] = $services;
-        return set_transient($this->prefix . '_services', $x, $ex);
+    public function setAspectsTransient ($diaspora_handle, $data) {
+        return $this->setTransientDiasporaData($diaspora_handle, 'aspects', $data);
+    }
+    public function getServicesTransient ($diaspora_handle) {
+        return $this->getTransientDiasporaData($diaspora_handle, 'services');
+    }
+    public function setServicesTransient ($diaspora_handle, $data) {
+        return $this->setTransientDiasporaData($diaspora_handle, 'services', $data);
+    }
+    public function getNotificationsTransient ($diaspora_handle) {
+        return $this->getTransientDiasporaData($diaspora_handle, 'notifications');
+    }
+    public function setNotificationsTransient ($diaspora_handle, $data) {
+        return $this->setTransientDiasporaData($diaspora_handle, 'notifications', $data);
+    }
+
+    public function refreshDiasporaTransients ($diaspora_handle) {
+        $this->diaspora->logIn();
+        $aspects = $this->diaspora->getAspects();
+        $this->setAspectsTransient($this->diaspora->getDiasporaID(), $aspects);
+        $services = $this->diaspora->getServices();
+        $this->setServicesTransient($this->diaspora->getDiasporaID(), $services);
+        $notifications = $this->diaspora->getNotifications();
+        $this->setNotificationsTransient($this->diaspora->getDiasporaID(), $notifications);
+        return array('aspects' => $aspects, 'services' => $services, 'notifications' => $notifications);
     }
 
     public function renderMetaBox ($post) {
@@ -714,12 +729,10 @@ END_HTML;
         } else {
             $aspects  = $this->getAspectsTransient($this->diaspora->getDiasporaID());
             $services = $this->getServicesTransient($this->diaspora->getDiasporaID());
-            if (false === $aspects || false === $services) {
-                $this->diaspora->logIn();
-                $aspects = $this->diaspora->getAspects();
-                $this->setAspectsTransient($this->diaspora->getDiasporaID(), $aspects);
-                $services = $this->diaspora->getServices();
-                $this->setServicesTransient($this->diaspora->getDiasporaID(), $services);
+            if (false === $aspects || false === $services || false === $notifications) {
+                $d_data = $this->refreshDiasporaTransients($this->diaspora->getDiasporaID());
+                $aspects = $d_data['aspects'];
+                $services = $d_data['services'];
             }
 ?>
 <fieldset>

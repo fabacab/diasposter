@@ -159,6 +159,14 @@ class Diaspora_Connection {
         return (!empty($m[1])) ? json_decode($m[1]) : false;
     }
 
+    public function getNotifications ($notification_type = '', $show = '') {
+        $url = '/notifications?format=json';
+        if (!empty($notification_type)) { "&type=$type"; }
+        if ('unread' === $show) { $url .= '&show=unread'; }
+        $this->doHttpRequest($url);
+        return $this->readJsonResponse($this->last_http_result->response);
+    }
+
     public function postStatusMessage ($msg, $aspect_ids = 'all_aspects', $additional_data = array()) {
         $data = array(
             'aspect_ids' => $aspect_ids,
