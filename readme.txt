@@ -22,7 +22,7 @@ Diasposter uses Diaspora's simple API to keep posts in sync as much as possible.
 
 * Upload images to your Diaspora pod by setting a Featured Image on your WordPress post.
 * When you delete your WordPress post, your Diaspora post is removed, too.
-* Comment synchronization comments on your Diaspora posts appear on your WordPress posts. Deleting a comment from your WordPress post deletes it from your Diaspora post, too.
+* Comments on your Diaspora posts appear on your WordPress posts. Deleting a comment from your WordPress post deletes it from your Diaspora post, too.
 * Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
 
 *Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
@@ -125,7 +125,7 @@ And if you choose to do this yourself, consider getting in touch with your theme
 
 == Changelog ==
 
-= Version 0.1.3 =
+= Version 0.1.4 =
 
 * Feature: Comment synchronization automatically detects new comments on your crossposted entries and copies them back to your WordPress post.
     * If you delete a comment on your WordPress post that was originally posted on your Diaspora* cross-post, the comment is also deleted from your Diaspora* post.
