@@ -169,6 +169,12 @@ class Diaspora_Connection {
         return $this->readJsonResponse($this->last_http_result->response);
     }
 
+    public function getComments ($post_id) {
+        $url = "/posts/$post_id/comments?format=json";
+        $this->doHttpRequest($url);
+        return $this->readJsonResponse($this->last_http_result->response);
+    }
+
     public function postStatusMessage ($msg, $aspect_ids = 'all_aspects', $additional_data = array()) {
         $data = array(
             'aspect_ids' => $aspect_ids,
@@ -218,7 +224,13 @@ class Diaspora_Connection {
     public function deletePost ($id) {
         $headers = array('X-CSRF-Token: ' . $this->csrf_token);
         $this->doHttpDelete("/posts/$id", array(), $headers);
-        return (200 === $this->last_http_result->info['http_code']) ? true : false;
+        return (204 === $this->last_http_result->info['http_code']) ? true : false;
+    }
+
+    public function deleteComment ($id) {
+        $headers = array('X-CSRF-Token: ' . $this->csrf_token);
+        $this->doHttpDelete("/comments/$id", array(), $headers);
+        return (204 === $this->last_http_result->info['http_code']) ? true : false;
     }
 
 }

@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -16,6 +16,7 @@ class Diasposter {
 
     public function __construct () {
         add_action('plugins_loaded', array($this, 'registerL10n'));
+        add_action('init', array($this, 'setSyncSchedules'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('admin_enqueue_scripts', array($this, 'registerAdminScripts'));
@@ -24,14 +25,17 @@ class Diasposter {
         add_action('add_meta_boxes', array($this, 'addMetaBox'));
         add_action('save_post', array($this, 'savePost'));
         add_action('before_delete_post', array($this, 'removePost'));
+        add_action('delete_comment', array($this, 'deleteComment'));
         // run late, so themes have a chance to register support
         // TODO: Add Post Format support.
         //add_action('after_setup_theme', array($this, 'registerThemeSupport'), 700);
 
+        add_action($this->prefix . '_sync_comment_content', array($this, 'syncCommentContent'));
+
         add_filter('post_row_actions', array($this, 'addPostRowAction'), 10, 2);
         add_filter('plugin_row_meta', array($this, 'addPluginRowMeta'), 10, 2);
 
-        //register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
         $options = get_option($this->prefix . '_settings');
         if (empty($options['user_accounts'])) {
@@ -172,6 +176,124 @@ END_HTML;
             $actions['view_on_diaspora'] = '<a href="http://' . $base_hostname . '/posts/' . $id . '">' . esc_html__('View post on Diaspora*', 'diasposter') . '</a>';
         }
         return $actions;
+    }
+
+    public function setSyncSchedules () {
+        if (!$this->isConnectedToService()) { return; }
+        $accts_to_sync = $this->getDiasporaAccountsToSync();
+        // If we are being asked to sync, set up an hourly schedule for that.
+        if (!empty($accts_to_sync)) {
+            foreach ($accts_to_sync as $x) {
+                if (!wp_get_schedule($this->prefix . '_sync_comment_content', array($x))) {
+                    wp_schedule_event(time(), 'hourly', $this->prefix . '_sync_comment_content', array($x));
+                }
+            }
+        }
+        // For any accounts we know of but aren't being asked to sync,
+        $known_accts = array();
+        $users_accts = $this->getDiasporaAccounts();
+        if ($users_accts) {
+            foreach ($users_accts as $acct) {
+                $known_accts[] = $acct;
+            }
+        }
+        $to_unschedule = array_diff($known_accts, $accts_to_sync);
+        foreach ($to_unschedule as $x) {
+            // check to see if there's a scheduled event to sync it, and,
+            // if so, unschedule it.
+            wp_unschedule_event(
+                wp_next_scheduled($this->prefix . '_sync_comment_content', array($x)),
+                $this->prefix . '_sync_comment_content',
+                array($x)
+            );
+        }
+    }
+
+    public function deactivate () {
+        $accts_to_sync = $this->getDiasporaAccountsToSync();
+        if (!empty($accts_to_sync)) {
+            foreach ($accts_to_sync as $acct) {
+                wp_clear_scheduled_hook($this->prefix . '_sync_comment_content', array($acct));
+            }
+        }
+    }
+
+    /**
+     * There's a frustrating bug in PHP? In WordPress? That causes get_posts()
+     * to always return an empty array when run in Cron if the PHP version is
+     * less than 5.4-ish. Check for that and workaround if necessary.
+     *
+     * @see https://wordpress.org/support/topic/get_posts-returns-no-results-when-run-via-cron
+     */
+    private function crosspostExists ($id) {
+        // If we're running on PHP >= 5.4, use WordPress's built-in function.
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
+            return get_posts(array(
+                'meta_key' => 'diaspora_post_id',
+                'meta_value' => $id,
+                'fields' => 'ids'
+            ));
+        }
+        global $wpdb;
+        return $wpdb->get_col($wpdb->prepare(
+            "
+            SELECT post_id FROM {$wpdb->postmeta}
+            WHERE meta_key='%s' AND meta_value='%s'
+            ",
+            'diaspora_post_id',
+            $id
+        ));
+    }
+
+
+    public function syncCommentContent ($diaspora_handle) {
+        $this->diaspora->logIn();
+        $notifications = $this->diaspora->getNotifications('comment_on_post');
+        foreach ($notifications as $n) {
+            // check to see if we have a post with that Diaspora post ID.
+            if ($post_ids = $this->crosspostExists($n->comment_on_post->target_id)) {
+                $post_id = array_pop($post_ids);
+                $wp_comments = get_comments(array('post_id' => $post_id));
+                $d_comments = $this->diaspora->getComments($n->comment_on_post->target_id);
+                foreach ($d_comments as $c) {
+                    // see if we have a comment with the remote comment GUID.
+                    $x = get_comments(array(
+                        'post_id' => $post_id,
+                        'meta_key' => 'diaspora_comment_guid',
+                        'meta_value' => $c->guid
+                    ));
+                    if (empty($x)) {
+                        // If the WP post has no such comment, insert a new comment in the database
+                        // with the content of the Diaspora comment.
+                        $new_comment_data = array(
+                            'comment_post_ID' => $post_id,
+                            'comment_type' => 'diaspora', // this is a custom comment type
+                            'comment_content' => $c->text,
+                            'comment_author' => $c->author->name,
+                            'comment_author_email' => $c->author->diaspora_id,
+                            'comment_author_url' => $this->diaspora->getPodURL() . '/people/' . $c->author->guid,
+                            // TODO: Doesn't seem like wp_new_comment() supports these?
+//                            'comment_author_IP' => gethostbyname(parse_url($this->diaspora->getPodURL(), PHP_URL_HOST)),
+//                            'comment_date' => date_i18n('Y-m-d H:i:s', strtotime($c->created_at)),
+//                            'comment_agent' => ucfirst($this->prefix)
+                        );
+                        if ($cid = wp_new_comment($new_comment_data)) {
+                            update_comment_meta($cid, 'diaspora_comment_guid', $c->guid);
+                            update_comment_meta($cid, 'diaspora_comment_id', $c->id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private function getDiasporaAccounts () {
+        $options = get_option($this->prefix . '_settings');
+        return (empty($options['user_accounts'])) ? array() : $options['user_accounts'];
+    }
+    private function getDiasporaAccountsToSync () {
+        $options = get_option($this->prefix . '_settings');
+        return (empty($options['sync_comment_content'])) ? array() : $options['sync_comment_content'];
     }
 
     public function addPluginRowMeta ($links, $file) {
@@ -540,10 +662,15 @@ END_HTML;
     }
 
     public function removePost ($post_id) {
-        $options = get_option($this->prefix . '_settings');
         $id = get_post_meta($post_id, 'diaspora_post_id', true);
         $this->diaspora->logIn();
         $this->diaspora->deletePost($id);
+    }
+
+    public function deleteComment ($comment_id) {
+        $id = get_comment_meta($comment_id, 'diaspora_comment_id', true);
+        $this->diaspora->logIn();
+        $this->diaspora->deleteComment($id);
     }
 
     /**
@@ -570,8 +697,21 @@ END_HTML;
                         $safe_input[$k][] = $this->encrypt($x);
                     }
                     break;
+                case 'sync_comment_content':
+                    $safe_input[$k] = array();
+                    foreach ($v as $x) {
+                        $safe_input[$k][] = sanitize_text_field($x);
+                    }
+                    break;
                 case 'exclude_categories':
+                case 'import_to_categories':
                 case 'post_types':
+                    $safe_v = array();
+                    foreach ($v as $x) {
+                        $safe_v[] = sanitize_text_field($x);
+                    }
+                    $safe_input[$k] = $safe_v;
+                    break;
                 case 'additional_markup':
                     $safe_input[$k] = trim($v);
                     break;
@@ -833,7 +973,7 @@ END_HTML;
 <ul class="fieldset-toc">
     <li><a href="#connection-to-service"><?php esc_html_e('Connection to Diaspora*', 'diasposter');?></a></li>
     <li><a href="#crossposting-options"><?php esc_html_e('Crossposting options', 'diasposter');?></a></li>
-    <!--<li><a href="#sync-options"><?php esc_html_e('Sync options', 'diasposter');?></a></li>-->
+    <li><a href="#sync-options"><?php esc_html_e('Sync options', 'diasposter');?></a></li>
     <li><a href="#plugin-extras"><?php esc_html_e('Plugin extras', 'diasposter');?></a></li>
 </ul>
 <form method="post" action="options.php">
@@ -1053,6 +1193,48 @@ END_HTML;
                 <label for="<?php esc_attr_e($this->prefix);?>_auto_facebook"><span class="description"><?php print sprintf(esc_html__('When checked, new posts you create on WordPress will have their "%s" option enabled by default. You can always override this when editing an individual post.', 'diasposter'), esc_html__('Send Facebook post?', 'diasposter'));?></span></label>
             </td>
         </tr>
+    </tbody>
+</table>
+</fieldset>
+<fieldset id="sync-options"><legend><?php esc_html_e('Sync options', 'diasposter');?></legend>
+<table class="form-table" summary="<?php esc_attr_e('Customize the import behavior.', 'diasposter');?>">
+    <tbody>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>_sync_comment_content"><?php esc_html_e('Sync comments from Diaspora*', 'diasposter');?></label>
+                <p class="description"><?php esc_html_e('(This feature is experimental. Please backup your website before you turn this on.)', 'diasposter');?></p>
+            </th>
+            <td>
+                <ul id="<?php esc_attr_e($this->prefix);?>_sync_comment_content">
+                    <?php print $this->diasporaAccountsListCheckboxes(array('id' => $this->prefix . '_sync_comment_content', 'name' => $this->prefix . '_settings[sync_comment_content][]'), $options['sync_comment_content']);?>
+                </ul>
+                <p class="description"><?php esc_html_e("Other people's comments on your cross-posted entries on the Diaspora* accounts you select will automatically be copied back to this blog.", 'diasposter');?></p>
+            </td>
+        </tr>
+<!--
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>_import_to_categories"><?php esc_html_e('Automatically assign synced posts to these categories:');?></label>
+            </th>
+            <td>
+                <ul id="<?php esc_attr_e($this->prefix);?>_import_to_categories">
+                <?php foreach (get_categories(array('hide_empty' => 0)) as $cat) : ?>
+                    <li>
+                        <label>
+                            <input
+                                type="checkbox"
+                                <?php if (isset($options['import_to_categories']) && in_array($cat->slug, $options['import_to_categories'])) : print 'checked="checked"'; endif;?>
+                                value="<?php esc_attr_e($cat->slug);?>"
+                                name="<?php esc_attr_e($this->prefix);?>_settings[import_to_categories][]">
+                            <?php print esc_html($cat->name);?>
+                        </label>
+                    </li>
+                <?php endforeach;?>
+                </ul>
+                <p class="description"><?php print sprintf(esc_html__('Will cause any posts imported from your Diaspora* account to be assigned the categories that you enable here. It is often a good idea to %screate a new category%s that you use exclusively for this purpose.', 'diasposter'), '<a href="' . admin_url('edit-tags.php?taxonomy=category') . '">', '</a>');?></p>
+            </td>
+        </tr>
+-->
     </tbody>
 </table>
 </fieldset>

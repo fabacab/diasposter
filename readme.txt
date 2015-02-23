@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,7 +18,12 @@ Diasposter posts to Diaspora whenever you hit the "Publish" button. Diasposter i
 * **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for featured images, post titles, excerpts, tags, custom post types, and more.
 * **Feature-rich:** Numerous additional options let you provide custom linkbacks, set global preferences and per-post settings, and more.
 
-Diasposter uses Diaspora's simple API to keep posts in sync as much as possible; when you delete your WordPress post, your Diaspora post is removed, too. Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
+Diasposter uses Diaspora's simple API to keep posts in sync as much as possible. Some notable features this enables are:
+
+* Upload images to your Diaspora pod by setting a Featured Image on your WordPress post.
+* When you delete your WordPress post, your Diaspora post is removed, too.
+* Comment synchronization comments on your Diaspora posts appear on your WordPress posts. Deleting a comment from your WordPress post deletes it from your Diaspora post, too.
+* Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
 
 *Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
 
@@ -119,6 +124,12 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.3 =
+
+* Feature: Comment synchronization automatically detects new comments on your crossposted entries and copies them back to your WordPress post.
+    * If you delete a comment on your WordPress post that was originally posted on your Diaspora* cross-post, the comment is also deleted from your Diaspora* post.
+    * **This feature is experimental.** It uses a "lazy Salmon-like detection" scheme and is not yet fully tested. Please backup your WordPress database before you enable this feature.
 
 = Version 0.1.3 =
 
