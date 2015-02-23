@@ -34,6 +34,7 @@ class Diasposter {
 
         add_filter('post_row_actions', array($this, 'addPostRowAction'), 10, 2);
         add_filter('plugin_row_meta', array($this, 'addPluginRowMeta'), 10, 2);
+        add_filter('get_avatar', array($this, 'getAvatar'), 10, 5);
 
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
@@ -267,7 +268,8 @@ END_HTML;
                         // with the content of the Diaspora comment.
                         $new_comment_data = array(
                             'comment_post_ID' => $post_id,
-                            'comment_type' => 'diaspora', // this is a custom comment type
+                            // This breaks some themes, don't use it for now.
+                            //'comment_type' => 'diaspora', // this is a custom comment type
                             'comment_content' => $c->text,
                             'comment_author' => $c->author->name,
                             'comment_author_email' => $c->author->diaspora_id,
@@ -280,11 +282,24 @@ END_HTML;
                         if ($cid = wp_new_comment($new_comment_data)) {
                             update_comment_meta($cid, 'diaspora_comment_guid', $c->guid);
                             update_comment_meta($cid, 'diaspora_comment_id', $c->id);
+                            update_comment_meta($cid, 'diaspora_comment_id', $c->id);
+                            update_comment_meta($cid, 'diaspora_avatar', $c->author->avatar);
                         }
                     }
                 }
             }
         }
+    }
+
+    public function getAvatar ($avatar, $id_or_email, $size, $default, $alt) {
+        if (is_object($id_or_email)) {
+            $d_avatar = get_comment_meta($id_or_email->comment_ID, 'diaspora_avatar', true);
+            if ($d_avatar) {
+                // TODO: Choose appropriate avatar based on $size
+                $avatar = '<img alt="' . $size . '" src="' . $d_avatar->large . '" class="avatar avatar-' . $size . ' photo" height="' . $size . '" width="' . $size . '" />';
+            }
+        }
+        return $avatar;
     }
 
     private function getDiasporaAccounts () {
