@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -124,6 +124,12 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.5 =
+
+* Bugfix: Improved comment synchronization.
+    * Sync'ed comments are now stored as HTML as WordPress expects, not Markdown.
+    * Fixed a bug that caused only one comment to be sync'ed per sync subroutine invocation.
 
 = Version 0.1.4 =
 

@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.4
+ * Version: 0.1.5
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -266,27 +266,70 @@ END_HTML;
                     if (empty($x)) {
                         // If the WP post has no such comment, insert a new comment in the database
                         // with the content of the Diaspora comment.
+                        require_once 'lib/Parsedown.php';
+                        $Parsedown = new Parsedown();
                         $new_comment_data = array(
                             'comment_post_ID' => $post_id,
-                            // This breaks some themes, don't use it for now.
-                            //'comment_type' => 'diaspora', // this is a custom comment type
-                            'comment_content' => $c->text,
+                            //'comment_type' => 'diaspora', // this custom comment type breaks some themes
+                            'comment_type' => '', // use regular comment type for now
+                            'comment_content' => $Parsedown->text($c->text),
                             'comment_author' => $c->author->name,
                             'comment_author_email' => $c->author->diaspora_id,
                             'comment_author_url' => $this->diaspora->getPodURL() . '/people/' . $c->author->guid,
-                            // TODO: Doesn't seem like wp_new_comment() supports these?
-//                            'comment_author_IP' => gethostbyname(parse_url($this->diaspora->getPodURL(), PHP_URL_HOST)),
-//                            'comment_date' => date_i18n('Y-m-d H:i:s', strtotime($c->created_at)),
-//                            'comment_agent' => ucfirst($this->prefix)
+                            // The following only seem to work when the comment
+                            // is inserted with wp_insert_comment(). Apparently,
+                            // it seems like wp_new_comment() won't support these.
+                            'comment_author_IP' => gethostbyname(parse_url($this->diaspora->getPodURL(), PHP_URL_HOST)),
+                            'comment_date' => date_i18n('Y-m-d H:i:s', strtotime($c->created_at)),
+                            'comment_agent' => ucfirst($this->prefix)
                         );
-                        if ($cid = wp_new_comment($new_comment_data)) {
+
+                        // There seems to be some issue with wp_allow_comment() where the second
+                        // time it is called during a WP-Cron, script execution ends. So I guess
+                        // we need to check for comment approval manually?
+                        $new_comment_data['comment_approved'] = $this->allowComment($new_comment_data);
+
+                        if ($cid = wp_insert_comment($new_comment_data)) {
                             update_comment_meta($cid, 'diaspora_comment_guid', $c->guid);
                             update_comment_meta($cid, 'diaspora_comment_id', $c->id);
-                            update_comment_meta($cid, 'diaspora_comment_id', $c->id);
                             update_comment_meta($cid, 'diaspora_avatar', $c->author->avatar);
+                            // mimic wp_new_comment()'s notification handling
+                            $this->commentNotify($cid, $new_comment_data['comment_approved']);
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private function allowComment ($new_comment_data) {
+        $approved = (check_comment(
+            $new_comment_data['comment_author'],
+            $new_comment_data['comment_author_email'],
+            $new_comment_data['comment_author_url'],
+            $new_comment_data['comment_content'],
+            $new_comment_data['comment_author_IP'],
+            $new_comment_data['comment_agent'],
+            $new_comment_data['comment_type']
+        )) ? 1 : 0;
+        $approved = (wp_blacklist_check(
+            $new_comment_data['comment_author'],
+            $new_comment_data['comment_author_email'],
+            $new_comment_data['comment_author_url'],
+            $new_comment_data['comment_content'],
+            $new_comment_data['comment_author_IP'],
+            $new_comment_data['comment_agent']
+        )) ? 'spam' : $approved;
+        return apply_filters('pre_comment_approved', $approved, $new_comment_data);
+    }
+
+    private function commentNotify ($cid, $approved) {
+        if ('spam' !== $approved) {
+            if ('0' == $approved) {
+                wp_notify_moderator($cid);
+            }
+            if (get_option('comments_notify') && $approved) {
+                wp_notify_postauthor($cid);
             }
         }
     }
