@@ -449,7 +449,6 @@ END_HTML;
      * post representation in Markdown.
      */
     private function prepareBody ($post_id) {
-        $post_title = apply_filters('the_title', get_post_field('post_title', $post_id));
         $post_body = apply_filters('the_content', get_post_field('post_content', $post_id));
         $post_excerpt = get_post_field('post_excerpt', $post_id);
         // Mimic wp_trim_excerpt() without The Loop.
@@ -462,15 +461,7 @@ END_HTML;
             $post_excerpt = $text;
         }
 
-        switch (get_post_format($post_id)) {
-            // If an image/gallery, strip the <img> tags.
-            // TODO: Detect which images failed to upload,
-            //       so that we only strip the others?
-            case 'image':
-            case 'gallery':
-                $post_body = $this->strip_only($post_body, 'img');
-                break;
-        }
+        $post_body = $this->prepareBodyByPostFormat($post_id);
 
         if (!class_exists('HTML_To_Markdown')) {
             require_once 'lib/HTML_To_Markdown.php';
@@ -480,11 +471,6 @@ END_HTML;
             ? new HTML_To_Markdown($post_excerpt)
             : new HTML_To_Markdown($post_body);
         $diaspora_body = $markdown->output();
-
-        // add title to start of post
-        if (!empty($post_title)) {
-            $diaspora_body = "# $post_title\n\n" . $diaspora_body;
-        }
 
         // add custom footer
         $options = get_option($this->prefix . '_settings');
@@ -515,6 +501,50 @@ END_HTML;
         }
 
         return $diaspora_body = apply_filters($this->prefix . '_prepared_post', $diaspora_body);
+    }
+
+    private function prepareBodyByPostFormat ($post_id) {
+        $post_title = apply_filters('the_title', get_post_field('post_title', $post_id));
+        $post_body = apply_filters('the_content', get_post_field('post_content', $post_id));
+        switch (get_post_format($post_id)) {
+            // If an image/gallery, strip the <img> tags.
+            // TODO: Detect which images failed to upload,
+            //       so that we only strip the others?
+            //       (Upload happens during prepareAdditionalData() method)
+            case 'image':
+            case 'gallery':
+                $post_body = $this->strip_only($post_body, 'img');
+                break;
+            case 'video':
+                // TODO
+                break;
+            case 'audio':
+                // TODO
+                break;
+            case 'quote':
+                // TODO: Is there anything special that needs to happen for quotes?
+                //       Blockquotes are already formatted pretty nicely. How can
+                //       they be made to look even better?
+                break;
+            case 'link':
+                $href = $this->extractByRegex('/<a\s.*?href=["\'](.*?)["\'].*?>/', $post_body, 1);
+                $text = $this->extractByRegex('/<a\s.*?>(.*?)<\/a>/', $post_body, 1);
+                $post_title = (empty($post_title)) ? strip_tags($text) : $post_title;
+                $post_title = '<a href="' . $href . '">' . $post_title . '</a>';
+                break;
+            case 'standard':
+            case 'aside':
+            default:
+                // do nothing, leave post body as-is
+                break;
+        }
+
+        // mark up title at start of post
+        if (!empty($post_title)) {
+            $post_body = "<h1>$post_title</h1>\n\n" . $post_body;
+        }
+
+        return $post_body;
     }
 
     private function prepareAdditionalData ($post_id) {
