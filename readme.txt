@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.6
+Stable tag: 0.1.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,18 +12,25 @@ Diasposter cross-posts your WordPress entries to Diaspora. Changes to your WordP
 
 == Description ==
 
-Diasposter posts to Diaspora whenever you hit the "Publish" button. Diasposter is very lightweight. It just requires you to connect to your Diaspora account from the plugin options screen. After that, you're ready to cross-post!
+Diasposter posts to Diaspora whenever you hit the "Publish" button. It can import Disapora comments to your original WordPress posts. It even uploads your WordPress post images as native Diaspora photos.
 
-* **Secure:** Unlike many other Diaspora tools, this plugin *never writes your login cookie to disk* and strictly enforces encrypted connections between your blog and your Diaspora pod, so your Diaspora access credentials are kept as safe as you keep your WordPress database. This is especially important on Shared Hosting plans where many other customers have access to your server's filesystem!
-* **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for featured images, post titles, excerpts, tags, custom post types, and more.
-* **Feature-rich:** Numerous additional options let you provide custom linkbacks, set global preferences and per-post settings, and more.
+**Transform your WordPress website into a back-end for Diaspora. Create original posts using WordPress, but publish them to Diaspora. Synchronize with your Diaspora comments. Always have a portable copy (a running backup) of all your original content, plus its Diaspora discussion thread.**
 
-Diasposter uses Diaspora's simple API to keep posts in sync as much as possible. Some notable features this enables are:
+Diasposter implements a simple API to keep posts in sync as much as possible; when you delete your WordPress post, your Diaspora post is removed, too. Comments on your Diaspora posts appear on your WordPress posts. Deleting a comment from your WordPress post deletes it from your Diaspora post, too. Featured images (aka "post thumbnails") and other photos in your WordPress media library can be uploaded directly into Diaspora posts to be hosted on your pod.
 
-* Upload images to your Diaspora pod by setting a Featured Image on your WordPress post.
-* When you delete your WordPress post, your Diaspora post is removed, too.
-* Comments on your Diaspora posts appear on your WordPress posts. Deleting a comment from your WordPress post deletes it from your Diaspora post, too.
-* Service integrations let you control the Diaspora auto-tweet and auto-post options right from your WordPress post editing screen. You can even toggle post location sharing on or off.
+Diasposter is very lightweight. It just requires you to connect to your Diaspora account from the plugin options screen. After that, you're ready to cross-post!
+
+* **Secure:** Unlike many other Diaspora tools, Diasposter *never writes your login cookie to disk*, strictly enforces encrypted connections between your blog and your Diaspora pod, and encrypts your password inside WordPress, so your Diaspora access credentials are kept as safe as you keep your WordPress database. This is especially important on Shared Hosting plans where many other customers have access to your server's filesystem!
+* **Easy to use:** Seamlessly translates WordPress formatting to beautiful Diaspora posts, with full support for post formats, [featured images](https://codex.wordpress.org/Post_Thumbnails), post titles, automatic and manual [excerpts](https://codex.wordpress.org/Excerpt), tags, custom post types, and more.
+* **Feature-rich:** Numerous additional options let you provide custom linkbacks, broadcast your Diaspora post on any social media services integrated with your pod (like Twitter, Tumblr, Facebook, and WordPress), set global preferences and per-post settings, and more.
+
+Diasposter makes use of [Post Formats](http://codex.wordpress.org/Post_Formats) to automatically choose the most appropriate formatting for your Diaspora post. This means:
+
+* WordPress's `Link` post format becomes a Diaspora post whose title is a link to the first link in your post.
+* WordPress's `Image` and `Gallery` post formats become Diaspora posts wherein each `<img>` in your post is uploaded directly into your Diaspora post, making a beautiful slideshow on Diaspora.
+* WordPress's `Standard`, `Aside`, and `Status` post formats are crossposted exactly as you enter them. (They are left untouched.)
+
+Other options enable tweaking additional metadata from your WordPres entry (notably tags and geo-location data), and more.
 
 *Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
 
@@ -99,19 +106,16 @@ If you have installed a geolocation plugin for WordPress but the location data i
 
 = Is Diasposter available in languages other than English? =
 
-Not yet, but I would love to accept translations for additional languages.
+Yes! This plugin has been translated into the following languages:
 
-With your help it can be translated into many more languages! To contribute a translation of this plugin into your language, please [sign up as a translator on Diasposter's Transifex project page](https://www.transifex.com/projects/p/diasposter/).
+* Dutch (`nl_NL`)
+    * Thanks, [André](https://www.transifex.com/accounts/profile/mijnheer/)! :D
+
+With your help it can be translated into even more! To contribute a translation of this plugin into your language, please [sign up as a translator on Diasposter's Transifex project page](https://www.transifex.com/projects/p/diasposter/).
 
 = What if my theme doesn't support Post Formats? =
 
-Diasposter will still work even if your theme doesn't support the [Post Formats](http://codex.wordpress.org/Post_Formats) feature. However, consider asking your theme developer to update your theme code so that it supports Post Formats itself for other plugins to use, too.
-
-If you feel comfortable doing this yourself, then in most cases, this is literally a one-line change. Simply use the [add_theme_support()](http://codex.wordpress.org/Function_Reference/add_theme_support) function in your theme's `functions.php` file:
-
-    add_theme_support('post-formats', array('link', 'image', 'quote', 'video', 'audio', 'chat''));
-
-And if you choose to do this yourself, consider getting in touch with your theme's developer to let them know how easy it was! We devs love to hear this kind of stuff. :)
+Don't worry, Diasposter will still work even if your theme doesn't support the [Post Formats](http://codex.wordpress.org/Post_Formats) feature. :)
 
 == Screenshots ==
 
@@ -124,6 +128,12 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.7 =
+
+* Feature: "Link" [post formats](https://codex.wordpress.org/Post_Formats) are now supported. When you cross-post a link post, the first hyperlink (`<a href="...">` element) in your post will be used as the cross-posted post's link and title.
+* Usability: New Dutch (`nl_NL`) translation available. (Thanks, [André Koot](https://www.transifex.com/accounts/profile/mijnheer/)!)
+    * Want Diasposter in your language? Join a [Diasposter translation](https://www.transifex.com/projects/p/diasposter/) team!
 
 = Version 0.1.6 =
 

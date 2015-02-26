@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.6
+ * Version: 0.1.7
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
