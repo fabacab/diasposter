@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.5
+ * Version: 0.1.6
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -462,6 +462,16 @@ END_HTML;
             $post_excerpt = $text;
         }
 
+        switch (get_post_format($post_id)) {
+            // If an image/gallery, strip the <img> tags.
+            // TODO: Detect which images failed to upload,
+            //       so that we only strip the others?
+            case 'image':
+            case 'gallery':
+                $post_body = $this->strip_only($post_body, 'img');
+                break;
+        }
+
         if (!class_exists('HTML_To_Markdown')) {
             require_once 'lib/HTML_To_Markdown.php';
         }
@@ -530,13 +540,56 @@ END_HTML;
             $additional_data['services'] = $services;
         }
 
+        // A "Featured Image" (post thumbnail) will always be the first image.
         if ($thumb_id = get_post_thumbnail_id($post_id)) {
-            $resp = $this->diaspora->postPhoto(get_attached_file($thumb_id));
-            if ($resp->success) {
-                $additional_data['photos'] = "{$resp->data->photo->id}";
+            if ($photo_id = $this->addPhotoData(get_attached_file($thumb_id))) {
+                $additional_data['photos'] = $photo_id;
             }
         }
+        switch (get_post_format($post_id)) {
+            // Selecting "Image" or "Gallery" as the post's Post Format
+            // will also directly upload any other images in the post.
+            case 'image':
+            case 'gallery':
+                $photo_ids = array();
+                foreach ($this->getImgSrcs(get_post_field('post_content', $post_id)) as $url) {
+                    if ($this_id = $this->addPhotoData($url)) {
+                        $photo_ids[] = $this_id;
+                    }
+                }
+                if (empty($additional_data['photos'])) {
+                    $additional_data['photos'] = $photo_ids;
+                } else {
+                    if (!is_array($additional_data['photos'])) {
+                        $additional_data['photos'] = array($additional_data['photos']);
+                    }
+                    $additional_data['photos'] += $photo_ids;
+                }
+                break;
+        }
         return $additional_data;
+    }
+
+    private function getImgSrcs ($html) {
+        $r = array();
+        if (preg_match_all('/<img (.+?)>/', $html, $m)) {
+            foreach ($m[1] as $match) {
+                foreach (wp_kses_hair($match, array('http', 'https')) as $attr) {
+                    $img[$attr['name']] = $attr['value'];
+                }
+                $r[] = $img['src'];
+            }
+        }
+        return $r;
+    }
+
+    private function addPhotoData ($file_or_url) {
+        $resp = $this->diaspora->postPhoto($file_or_url);
+        if ($resp->success) {
+            return "{$resp->data->photo->id}";
+        } else {
+            return false;
+        }
     }
 
     public function savePost ($post_id) {

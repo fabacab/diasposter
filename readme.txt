@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -124,6 +124,10 @@ And if you choose to do this yourself, consider getting in touch with your theme
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.6 =
+
+* Feature: "Image" and "Gallery" [post formats](https://codex.wordpress.org/Post_Formats) now automatically detect `<img>` tags in WordPress post content and directly upload the images themselves to your Diaspora* post. This makes it easy to create beautiful photoset posts on Diaspora simply by inserting images into your WordPress post.
 
 = Version 0.1.5 =
 

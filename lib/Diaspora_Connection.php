@@ -214,8 +214,10 @@ class Diaspora_Connection {
             'X-CSRF-Token: ' . $this->csrf_token,
             'X-File-Name: ' . basename($file),
             'Content-Type: application/octet-stream',
-            'Content-Length: ' . filesize($file)
         );
+        if ($size = @filesize($file)) {
+            $headers[] = "Content-Length: $size";
+        }
         $data = file_get_contents($file);
         $this->doHttpRequest('/photos' . $query_string, $data, $headers);
         return $this->readJsonResponse($this->last_http_result->response);
