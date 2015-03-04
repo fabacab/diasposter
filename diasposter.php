@@ -3,7 +3,7 @@
  * Plugin Name: Diasposter
  * Plugin URI: https://github.com/meitar/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
- * Version: 0.1.7
+ * Version: 0.1.8
  * Author: Meitar Moscovitz
  * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
@@ -35,6 +35,7 @@ class Diasposter {
         add_filter('post_row_actions', array($this, 'addPostRowAction'), 10, 2);
         add_filter('plugin_row_meta', array($this, 'addPluginRowMeta'), 10, 2);
         add_filter('get_avatar', array($this, 'getAvatar'), 10, 5);
+        add_filter('syn_add_links', array($this, 'addSyndicationLinks'));
 
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
@@ -50,6 +51,18 @@ class Diasposter {
                 $this->diaspora->setDebugLog(ABSPATH . '/wp-content/debug.log');
             }
         }
+    }
+
+    /**
+     * Implements rel-syndication for POSSE as expected by the
+     * Syndication Links plugin for Wordpress.
+     *
+     * @see https://wordpress.org/plugins/syndication-links/
+     * @see http://indiewebcamp.com/rel-syndication
+     */
+    public function addSyndicationLinks ($urls) {
+        $urls[] = $this->getSyndicatedAddress(get_the_ID());
+        return $urls;
     }
 
     public function showMissingConfigNotice () {
@@ -170,11 +183,16 @@ END_HTML;
         $screen->set_help_sidebar($screen->get_help_sidebar() . $sidebar);
     }
 
+    private function getSyndicatedAddress ($post_id) {
+        $base_hostname = get_post_meta($post_id, 'diaspora_host', true);
+        $id = get_post_meta($post_id, 'diaspora_post_id', true);
+        return "http://{$base_hostname}/posts/{$id}";
+    }
+
     public function addPostRowAction ($actions, $post) {
         $id = get_post_meta($post->ID, 'diaspora_post_id', true);
         if ($id) {
-            $base_hostname = get_post_meta($post->ID, 'diaspora_host', true);
-            $actions['view_on_diaspora'] = '<a href="http://' . $base_hostname . '/posts/' . $id . '">' . esc_html__('View post on Diaspora*', 'diasposter') . '</a>';
+            $actions['view_on_diaspora'] = '<a href="' . $this->getSyndicatedAddress($post->ID) . '">' . esc_html__('View post on Diaspora*', 'diasposter') . '</a>';
         }
         return $actions;
     }
@@ -682,9 +700,8 @@ END_HTML;
             $host = array_pop($parts);
             update_post_meta($post_id, 'diaspora_host', $host);
             update_post_meta($post_id, 'diaspora_post_id', $id);
-            $url = "http://$host/posts/$id";
             $this->addAdminNotices(
-                esc_html__('Post crossposted.', 'diasposter') . ' <a href="' . $url . '">' . esc_html__('View post on Diaspora*', 'diasposter') . '</a>'
+                esc_html__('Post crossposted.', 'diasposter') . ' <a href="' . $this->getSyndicatedAddress($post_id) . '">' . esc_html__('View post on Diaspora*', 'diasposter') . '</a>'
             );
         }
     }
@@ -1004,7 +1021,7 @@ END_HTML;
         if ('publish' === $post->post_status && $id) {
 ?>
 <p>
-    <a href="http://<?php print esc_attr($d);?>/posts/<?php print esc_attr($id);?>" class="button button-small"><?php esc_html_e('View post on Diaspora*', 'diasposter');?></a>
+    <a href="<?php print esc_attr($this->getSyndicatedAddress($post->ID));?>" class="button button-small"><?php esc_html_e('View post on Diaspora*', 'diasposter');?></a>
 </p>
 <?php
         } else {

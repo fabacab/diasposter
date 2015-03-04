@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meita
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.1.7
+Stable tag: 0.1.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,7 +30,7 @@ Diasposter makes use of [Post Formats](http://codex.wordpress.org/Post_Formats) 
 * WordPress's `Image` and `Gallery` post formats become Diaspora posts wherein each `<img>` in your post is uploaded directly into your Diaspora post, making a beautiful slideshow on Diaspora.
 * WordPress's `Standard`, `Aside`, and `Status` post formats are crossposted exactly as you enter them. (They are left untouched.)
 
-Other options enable tweaking additional metadata from your WordPres entry (notably tags and geo-location data), and more.
+Other options enable tweaking additional metadata from your WordPres entry (notably tags and geo-location data), and more. Diasposter is also [IndieWeb](https://indiewebcamp.com/)-friendly, with built-in support for the [`rel-syndication`](https://indiewebcamp.com/rel-syndication) pattern.
 
 *Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
 
@@ -128,6 +128,11 @@ Don't worry, Diasposter will still work even if your theme doesn't support the [
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.8 =
+
+* Feature: Support [`rel-syndication` IndieWeb pattern](https://indiewebcamp.com/rel-syndication) as implemented by the recommended [Syndication Links](https://indiewebcamp.com/rel-syndication#How_to_link_from_WordPress) plugin.
+    * `rel-syndication` is an IndieWeb best practice recommendation that provides a way to automatically link to crossposted copies (called "POSSE'd copies" in the jargon) of your posts to improve the discoverability and usability of your posts. For Diasposter's `rel-syndication` to work, you must also install a compatible WordPress syndication links plugin, such as the [Syndication Links](https://wordpress.org/plugins/syndication-links/) plugin, but the absence of such a plugin will not cause any problems, either.
 
 = Version 0.1.7 =
 
