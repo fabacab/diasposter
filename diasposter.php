@@ -184,9 +184,12 @@ END_HTML;
     }
 
     private function getSyndicatedAddress ($post_id) {
-        $base_hostname = get_post_meta($post_id, 'diaspora_host', true);
-        $id = get_post_meta($post_id, 'diaspora_post_id', true);
-        return "http://{$base_hostname}/posts/{$id}";
+        $url = '';
+        if ($id = get_post_meta($post_id, 'diaspora_post_id', true)) {
+            $base_hostname = get_post_meta($post_id, 'diaspora_host', true);
+            $url .= "http://{$base_hostname}/posts/{$id}";
+        }
+        return $url;
     }
 
     public function addPostRowAction ($actions, $post) {
