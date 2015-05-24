@@ -84,10 +84,12 @@ class Diasposter {
 <?php
     }
 
-    private function showNotice ($msg) {
+    private function showNotice ($notice) {
+        $msg  = (is_array($notice)) ? $notice['msg'] : $notice;
+        $type = (is_array($notice) && !empty($notice['type'])) ? $notice['type'] : 'updated';
 ?>
-<div class="updated">
-    <p><?php print $msg; // No escaping because we want links, so be careful. ?></p>
+<div class="<?php print esc_attr($type);?>">
+    <p><?php print strip_tags($msg, '<a>');?></p>
 </div>
 <?php
     }
@@ -468,6 +470,9 @@ END_HTML;
     /**
      * Translates WordPress post content to an appropriate Diaspora*
      * post representation in Markdown.
+     *
+     * @param int $post_id WordPress Post ID number.
+     * @return string The translated/sanitized content ready for POST'ing to Diaspora.
      */
     private function prepareBody ($post_id) {
         $post_body = apply_filters('the_content', get_post_field('post_content', $post_id));
@@ -658,6 +663,7 @@ END_HTML;
             return;
         }
 
+        // Update crossposting settings.
         if (!empty($_POST)) {
             $this->updatePostSimpleOption($post_id, 'send_facebook');
             $this->updatePostSimpleOption($post_id, 'send_tumblr');
@@ -666,11 +672,9 @@ END_HTML;
             $this->updatePostSimpleOption($post_id, 'use_excerpt');
             $this->updatePostSimpleOption($post_id, 'use_geo');
         }
-
         if (isset($_POST['diaspora_aspect_ids'])) {
             update_post_meta($post_id, 'diaspora_aspect_ids', $this->validateAspectIds($_POST['diaspora_aspect_ids']));
         }
-
         if (isset($_POST[$this->prefix . '_crosspost']) && 'N' === $_POST[$this->prefix . '_crosspost']) {
             update_post_meta($post_id, $this->prefix . '_crosspost', 'N'); // 'N' means "no"
             return;
@@ -678,10 +682,22 @@ END_HTML;
             delete_post_meta($post_id, $this->prefix . '_crosspost', 'N');
         }
 
-        // Prepare for Diaspora
-        if (!$this->isPostCrosspostable($post_id)) { return false; }
-        $this->diaspora->logIn();
+        // Set up crossposting connection.
+        if (!$this->isPostCrosspostable($post_id)) { return; }
+        if (!$this->diaspora->logIn()) {
+            $this->addAdminNotices(array(
+                array(
+                    'msg' =>
+                        esc_html__('Crossposting failed', 'diasposter')
+                        . ': '
+                        . esc_html__('Failed to log in to Diaspora* pod.', 'diasposter'),
+                    'type' => 'error'
+                )
+            ));
+            return;
+        }
 
+        // Prepare for Diaspora
         $additional_data = $this->prepareAdditionalData($post_id);
         $diaspora_body = $this->prepareBody($post_id);
 
@@ -1030,7 +1046,7 @@ END_HTML;
         } else {
             $aspects  = $this->getAspectsTransient($this->diaspora->getDiasporaID());
             $services = $this->getServicesTransient($this->diaspora->getDiasporaID());
-            if (false === $aspects || false === $services || false === $notifications) {
+            if (false === $aspects || false === $services) {
                 $d_data = $this->refreshDiasporaTransients($this->diaspora->getDiasporaID());
                 $aspects = $d_data['aspects'];
                 $services = $d_data['services'];
@@ -1190,6 +1206,7 @@ END_HTML;
                         <a href="<?php print wp_nonce_url(admin_url('options-general.php?page=' . $this->prefix . '_settings&disconnect'), 'disconnect_from_diaspora', $this->prefix . '_nonce');?>" class="button"><?php esc_html_e('Disconnect', 'diasposter');?></a>
                         <span class="description"><?php esc_html_e('Disconnecting will stop cross-posts from appearing on or being imported from your Diaspora* stream(s), and will reset the options below to their defaults. You can re-connect at any time.', 'diasposter');?></span>
                     </p>
+                    <p class="description"><?php esc_html_e('Active Diaspora* account:', 'diasposter');?> <?php esc_html_e($options['user_accounts'][0], 'diasposter');?></p>
                 </div>
             </th>
         </tr>
