@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
-Tested up to: 4.1.1
-Stable tag: 0.1.8
+Tested up to: 4.2.2
+Stable tag: 0.1.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -128,6 +128,12 @@ Don't worry, Diasposter will still work even if your theme doesn't support the [
 4. Get help where you need it from WordPress's built-in "Help" system.
 
 == Changelog ==
+
+= Version 0.1.9 =
+
+* Bugfix: Fix failed log in attempts on some Diaspora pods.
+* Usability: Display currently connected Diaspora user account name on the settings screen.
+* Tested with WordPress 4.2.2.
 
 = Version 0.1.8 =
 
