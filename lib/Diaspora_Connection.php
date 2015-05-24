@@ -116,7 +116,7 @@ class Diaspora_Connection {
 
     private function parseAuthenticityToken ($str) {
         $m = array();
-        preg_match('/content="(.*?)" name="csrf-token"/', $str, $m);
+        preg_match('/<meta (?:name="csrf-token" content="(.*?)"|content="(.*?)" name="csrf-token")/', $str, $m);
         return (!empty($m[1])) ? $m[1] : false;
     }
 
@@ -136,7 +136,7 @@ class Diaspora_Connection {
     }
 
     public function logIn () {
-        $this->doHttpRequest('/');
+        $this->doHttpRequest('/users/sign_in');
         $params = array(
             'user[username]' => $this->user,
             'user[password]' => $this->password,

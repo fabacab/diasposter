@@ -925,11 +925,11 @@ END_HTML;
 
     private function encrypt ($str, $key = AUTH_KEY) {
         global $wpdb;
-        return base64_encode($wpdb->get_var($wpdb->prepare('SELECT AES_ENCRYPT(%s,%s)', $str, $key)));
+        return $wpdb->get_var($wpdb->prepare('SELECT HEX(AES_ENCRYPT(%s,%s))', $str, $key));
     }
     private function decrypt ($str, $key = AUTH_KEY) {
         global $wpdb;
-        return $wpdb->get_var($wpdb->prepare('SELECT AES_DECRYPT(%s,%s)', base64_decode($str), $key));
+        return $wpdb->get_var($wpdb->prepare('SELECT AES_DECRYPT(UNHEX(%s),%s)', $str, $key));
     }
 
     public function registerAdminMenu () {
