@@ -88,7 +88,7 @@ class Diasposter {
         $msg  = (is_array($notice)) ? $notice['msg'] : $notice;
         $type = (is_array($notice) && !empty($notice['type'])) ? $notice['type'] : 'updated';
 ?>
-<div class="<?php print esc_attr($type);?>">
+<div class="notice is-dismissible <?php print esc_attr($type);?>">
     <p><?php print strip_tags($msg, '<a>');?></p>
 </div>
 <?php
