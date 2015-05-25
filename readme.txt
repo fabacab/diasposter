@@ -132,8 +132,11 @@ Don't worry, Diasposter will still work even if your theme doesn't support the [
 = Version 0.1.9 =
 
 * Bugfix: Fix failed log in attempts on some Diaspora pods.
-* Usability: Display currently connected Diaspora user account name on the settings screen.
-* Tested with WordPress 4.2.2.
+* Usability:
+    * The currently connected Diaspora user account name is now shown on the settings screen.
+    * Error messages for certain issues that caused silent failures are now reported to user.
+    * Admin notices are now user-dismissible.
+* Compatible with WordPress 4.2.2.
 
 = Version 0.1.8 =
 
