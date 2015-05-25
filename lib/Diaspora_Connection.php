@@ -117,7 +117,12 @@ class Diaspora_Connection {
     private function parseAuthenticityToken ($str) {
         $m = array();
         preg_match('/<meta (?:name="csrf-token" content="(.*?)"|content="(.*?)" name="csrf-token")/', $str, $m);
-        return (!empty($m[1])) ? $m[1] : false;
+        if (empty($m[1]) && !empty($m[2])) {
+            $token = $m[2];
+        } else if (!empty($m[1])) {
+            $token = $m[1];
+        }
+        return (!empty($token)) ? $token : false;
     }
 
     private function readCookie ($str) {
