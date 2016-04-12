@@ -71,6 +71,18 @@ class Diaspora_Connection {
             curl_setopt($ch, CURLOPT_STDERR, $fh);
         }
 
+        // Always verify the SSL connection, even on older cURLs.
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        /**
+         * Filters the path to the certificate authorities to use.
+         *
+         * If this filter returns an empty string (the default), then
+         * the certificates bundled with libcurl are used.
+         */
+        $capath = apply_filters('diasposter_capath', '');
+        if (!empty($capath)) {
+            curl_setopt($ch, CURLOPT_CAPATH, $capath);
+        }
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
