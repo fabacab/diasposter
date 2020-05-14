@@ -1,11 +1,9 @@
 <?php
 /**
  * Plugin Name: Diasposter
- * Plugin URI: https://github.com/meitar/diasposter/#readme
+ * Plugin URI: https://github.com/fabacab/diasposter/#readme
  * Description: Automatically crossposts to your Diaspora* stream when you publish a post on your WordPress blog.
  * Version: 0.1.9
- * Author: Meitar Moscovitz
- * Author URI: http://Cyberbusking.org/
  * Text Domain: diasposter
  * Domain Path: /languages
  */
@@ -99,7 +97,7 @@ class Diasposter {
 <div class="donation-appeal">
     <p style="text-align: center; font-size: larger; width: 70%; margin: 0 auto;"><?php print sprintf(
 esc_html__('Diasposter is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'diasposter'),
-'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__('making a donation', 'diasposter') . '</a>',
+'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted">' . esc_html__('making a donation', 'diasposter') . '</a>',
 '<a href="http://Cyberbusking.org/">' . esc_html__('houseless, jobless, nomadic developer', 'diasposter') . '</a>'
 );?></p>
 </div>
@@ -180,7 +178,7 @@ esc_html__('Diasposter is provided as free software, but sadly grocery stores do
         $sidebar = <<<END_HTML
 <p><strong>$x</strong></p>
 <p><a href="https://wordpress.org/support/plugin/diasposter" target="_blank">$y</a></p>
-<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted" target="_blank">&hearts; $z &hearts;</a></p>
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" target="_blank">&hearts; $z &hearts;</a></p>
 END_HTML;
         $screen->set_help_sidebar($screen->get_help_sidebar() . $sidebar);
     }
@@ -380,7 +378,7 @@ END_HTML;
     public function addPluginRowMeta ($links, $file) {
         if (false !== strpos($file, basename(__FILE__))) {
             $new_links = array(
-                '&hearts; <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__('Donate to Diasposter', 'diasposter') . '</a> &hearts;',
+                '&hearts; <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted">' . esc_html__('Donate to Diasposter', 'diasposter') . '</a> &hearts;',
                 '<a href="https://wordpress.org/support/plugin/diasposter/">' . esc_html__('Diasposter support forum', 'diasposter') . '</a>'
             );
             $links = array_merge($links, $new_links);

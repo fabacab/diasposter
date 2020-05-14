@@ -522,8 +522,8 @@ msgid "Uncheck to disable the Facebook auto-post."
 msgstr "Niet aankruisen om automatisch plaatsen op Facebook uit te schakelen."
 
 #. Plugin URI of the plugin/theme
-msgid "https://github.com/meitar/diasposter/#readme"
-msgstr "https://github.com/meitar/diasposter/#readme"
+msgid "https://github.com/fabacab/diasposter/#readme"
+msgstr "https://github.com/fabacab/diasposter/#readme"
 
 #. Description of the plugin/theme
 msgid ""
@@ -532,8 +532,8 @@ msgid ""
 msgstr "Automatisch crossposten naar je diaspora* stream als je een bericht plaatst op je WordPress blog."
 
 #. Author of the plugin/theme
-msgid "Meitar Moscovitz"
-msgstr "Meitar Moscovitz"
+msgid "The Author"
+msgstr "The Author"
 
 #. Author URI of the plugin/theme
 msgid "http://Cyberbusking.org/"

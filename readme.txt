@@ -1,6 +1,6 @@
 === Diasposter ===
-Contributors: meitar
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
+Contributors: maymay
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Diaspora, post, crosspost, publishing, post formats
 Requires at least: 3.5
 Tested up to: 4.2.2
@@ -32,7 +32,7 @@ Diasposter makes use of [Post Formats](http://codex.wordpress.org/Post_Formats) 
 
 Other options enable tweaking additional metadata from your WordPres entry (notably tags and geo-location data), and more. Diasposter is also [IndieWeb](https://indiewebcamp.com/)-friendly, with built-in support for the [`rel-syndication`](https://indiewebcamp.com/rel-syndication) pattern.
 
-*Donations for [my WordPress plugins](https://profiles.wordpress.org/meitar/#content-plugins) make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). :) Thank you for your support!*
+*Donations for my WordPress plugins make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
 
 > Servers no longer serve, they possess. We should call them possessors.
 
@@ -54,7 +54,7 @@ See also the [Screenshots](https://wordpress.org/plugins/diasposter/screenshots/
 
 Diasposter makes use of the [cURL PHP extension](https://php.net/manual/book.curl.php) and expects PHP 5.3 or greater.
 
-It's also possible that your system administrator will apply updates to one or more of the core system packages this plugin uses without your knowledge. If this happens, and the updated packages contain backward-incompatible changes, the plugin may begin to issue errors. Should this occur, please [file a bug report on the Diasposter project's issue tracker](https://github.com/meitar/diasposter/issues/new).
+It's also possible that your system administrator will apply updates to one or more of the core system packages this plugin uses without your knowledge. If this happens, and the updated packages contain backward-incompatible changes, the plugin may begin to issue errors. Should this occur, please [file a bug report on the Diasposter project's issue tracker](https://github.com/fabacab/diasposter/issues/new).
 
 == Frequently Asked Questions ==
 
@@ -78,7 +78,7 @@ If you delete a post that you have previously crossposted, Diasposter will delet
 
 = Can I cross-post Private posts from WordPress to Diaspora? =
 
-Not yet, but this is a planned feature. Feel free to offer suggestions or patches at [the Diasposter project issue tracker](https://github.com/meitar/diasposter/issues/new).
+Not yet, but this is a planned feature. Feel free to offer suggestions or patches at [the Diasposter project issue tracker](https://github.com/fabacab/diasposter/issues/new).
 
 = Can I choose which Diaspora aspects to share with? =
 
@@ -186,7 +186,7 @@ Don't worry, Diasposter will still work even if your theme doesn't support the [
 
 == Other notes ==
 
-Maintaining this plugin is a labor of love. However, if you like it, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Diasposter%20WordPress%20Plugin&item_number=diasposter&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) for your use of the plugin, [purchasing one of Meitar's web development books](http://www.amazon.com/gp/redirect.html?ie=UTF8&location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26redirect%3Dtrue%26sort%3Drelevancerank%26search-type%3Dss%26index%3Dbooks%26ref%3Dntt%255Fathr%255Fdp%255Fsr%255F2%26field-author%3DMeitar%2520Moscovitz&tag=maymaydotnet-20&linkCode=ur2&camp=1789&creative=390957) or, better yet, contributing directly to [Meitar's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
+Maintaining this plugin is a labor of love. However, if you like it, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Diasposter%20WordPress%20Plugin&amp;item_number=diasposter&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted) for your use of the plugin or, better yet, contributing directly to [my's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
 
 = Developer reference =
 

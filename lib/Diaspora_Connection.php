@@ -1,8 +1,6 @@
 <?php
 /**
  * Super-skeletal class to interact with Diaspora.
- *
- * @author Meitar Moscovitz <meitarm@gmail.com>
  */
 
 class Diaspora_Connection {

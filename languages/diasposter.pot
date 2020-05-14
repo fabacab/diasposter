@@ -516,7 +516,7 @@ msgid "Uncheck to disable the Facebook auto-post."
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "https://github.com/meitar/diasposter/#readme"
+msgid "https://github.com/fabacab/diasposter/#readme"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -526,7 +526,7 @@ msgid ""
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "Meitar Moscovitz"
+msgid "The Author"
 msgstr ""
 
 #. Author URI of the plugin/theme
